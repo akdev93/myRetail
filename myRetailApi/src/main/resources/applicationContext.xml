@@ -1,0 +1,27 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context.xsd"
+>
+
+    <context:property-placeholder location="classpath:myRetailApi.properties" />
+    <bean id="catalogServiceProxy" class="com.myRetail.product.proxy.FakeCatalogServiceProxyImpl" init-method="init" >
+        <property name="targetUrl" value="${CatalogServiceProxy.targetUrl}" />
+    </bean>
+
+    <bean id="pricingDAO" class="com.myRetail.product.dao.PricingDAO" init-method="init" destroy-method="close">
+        <property name="connectHost" value="${PricingDAO.connectHost}" />
+        <property name="connectPort" value="${PricingDAO.connectPort}"/>
+        <property name="keyspaceName" value="${PricingDAO.keyspaceName}" />
+    </bean>
+
+    <bean id="productAggregator" class="com.myRetail.product.aggregator.ProductInfoAggregator" init-method="init" destroy-method="close" >
+        <property name="pricingDAO" ref="pricingDAO" />
+        <property name="catalogServiceProxy" ref="catalogServiceProxy" />
+        <property name="poolSize" value="${ProductInfoAggregator.poolSize}" />
+    </bean>
+
+</beans>
