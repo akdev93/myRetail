@@ -6,26 +6,15 @@ import com.myRetail.product.model.CatalogInfo;
 import com.myRetail.product.model.PriceInfo;
 import com.myRetail.product.model.ProductInfo;
 import com.myRetail.product.proxy.CatalogServiceProxy;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
-/**
- * Created by koneria on 4/20/16.
- */
-public class ProductInfoAggregatorTest  extends TestCase {
-    public ProductInfoAggregatorTest(String testName) {
-        super(testName);
-    }
 
-    public static Test suite() {
-        return new TestSuite(ProductInfoAggregatorTest.class);
-    }
+public class ProductInfoAggregatorTest {
 
+    @org.junit.Test
     public void testSyncNoErrors() {
         String productId="1";
         String currencyCode="USD";
@@ -51,7 +40,7 @@ public class ProductInfoAggregatorTest  extends TestCase {
     }
 
 
-
+    @org.junit.Test
     public void testMultiThreadedNoErrors() {
         String productId="1";
         String currencyCode="USD";
@@ -75,7 +64,7 @@ public class ProductInfoAggregatorTest  extends TestCase {
         org.junit.Assert.assertTrue(String.format("price is not as expected %s ", productInfo.getPriceInfo().getPrice()),productInfo.getPriceInfo().getPrice() == pi.getPrice());
     }
 
-
+    @org.junit.Test
     public void testMultiThreadedNoCatalog() {
         String productId="1";
         String currencyCode="USD";
@@ -95,7 +84,7 @@ public class ProductInfoAggregatorTest  extends TestCase {
         org.junit.Assert.assertTrue("Optional is not empty although catalog was absent",(!optionalProductInfo.isPresent()));
     }
 
-
+    @org.junit.Test
     public void testMultiThreadedNoPrice() {
         String productId="1";
         String currencyCode="USD";
@@ -115,7 +104,7 @@ public class ProductInfoAggregatorTest  extends TestCase {
         org.junit.Assert.assertTrue("Optional is not empty although price was absent",(!optionalProductInfo.isPresent()));
     }
 
-
+    @org.junit.Test
     public void testMultiThreadedNoPriceNoCatalog() {
         String productId="1";
         String currencyCode="USD";
@@ -133,6 +122,7 @@ public class ProductInfoAggregatorTest  extends TestCase {
         org.junit.Assert.assertTrue("Optional is not empty although price and catalog was absent",(!optionalProductInfo.isPresent()));
     }
 
+    @org.junit.Test
     public void testMultiThreadedCatalogExceptionWithAppError() {
         String productId="1";
         String currencyCode="USD";
@@ -157,7 +147,7 @@ public class ProductInfoAggregatorTest  extends TestCase {
 
     }
 
-
+    @org.junit.Test
     public void testMultiThreadedPriceExceptionAppError() {
         String productId="1";
         String currencyCode="USD";
@@ -181,6 +171,7 @@ public class ProductInfoAggregatorTest  extends TestCase {
         }
     }
 
+    @org.junit.Test
     public void testClose() {
         ProductInfoAggregator pia = new ProductInfoAggregator();
         pia.init();
@@ -189,12 +180,14 @@ public class ProductInfoAggregatorTest  extends TestCase {
         org.junit.Assert.assertTrue("Pool is not shutdown after close()", pia.getPool().isShutdown());
     }
 
+    @org.junit.Test
     public void testInit() {
         ProductInfoAggregator pia = new ProductInfoAggregator();
         pia.init();
         org.junit.Assert.assertTrue("Pool is not up", !pia.getPool().isShutdown());
     }
 
+    @org.junit.Test
     public void testBuildProductInfoTestWithCatalogAndPrice(){
         String productId="1";
         CatalogInfo ci = new CatalogInfo(productId, "one");
@@ -210,6 +203,7 @@ public class ProductInfoAggregatorTest  extends TestCase {
         org.junit.Assert.assertTrue("Unexpected Price ", optProductInfo.get().getPriceInfo().getPrice() == pi.getPrice());
     }
 
+    @org.junit.Test
     public void testBuildProductInfoTestWithNoCatalog(){
         String productId="1";
         PriceInfo pi = new PriceInfo(productId,1.0f,"USD");
@@ -221,6 +215,7 @@ public class ProductInfoAggregatorTest  extends TestCase {
         org.junit.Assert.assertTrue("Product Info is not absent although there is no catalog", !optProductInfo.isPresent());
     }
 
+    @org.junit.Test
     public void testBuildProductInfoTestWithNoPrice(){
         String productId="1";
         CatalogInfo ci = new CatalogInfo(productId, "one");

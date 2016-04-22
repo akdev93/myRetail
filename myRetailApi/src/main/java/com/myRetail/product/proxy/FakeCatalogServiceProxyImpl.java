@@ -14,9 +14,7 @@ import com.myRetail.product.model.CatalogInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * Created by koneria on 4/17/16.
- */
+
 public class FakeCatalogServiceProxyImpl extends CatalogServiceProxy {
 
     private String targetUrl;

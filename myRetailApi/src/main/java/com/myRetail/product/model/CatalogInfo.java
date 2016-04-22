@@ -3,9 +3,6 @@ package com.myRetail.product.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Created by koneria on 4/17/16.
- */
 
 @XmlRootElement
 public class CatalogInfo {

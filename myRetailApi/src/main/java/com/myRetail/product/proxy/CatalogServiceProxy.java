@@ -5,31 +5,19 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import com.myRetail.product.dataAccess.AsyncDataAccess;
 import com.myRetail.product.model.CatalogInfo;
-/**
- * Created by koneria on 4/17/16.
- */
-public abstract class CatalogServiceProxy {
+
+
+public abstract class CatalogServiceProxy extends AsyncDataAccess<CatalogInfo> {
 
     public abstract Optional<CatalogInfo> fetchCatalogInfo(String productId);
 
     public Future<Optional<CatalogInfo>> fetchCatalogInfoAsync(String productId, ExecutorService pool) {
-        AsyncCall call = createAsyncCall(productId);
-        return pool.submit(call);
+        return getDataAsync(new Object[]{productId}, pool);
+    }
+    protected Optional<CatalogInfo> getData(Object[] args) {
+        return fetchCatalogInfo((String)args[0]);
     }
 
-    private  AsyncCall createAsyncCall(String productId) {
-        return new AsyncCall(productId);
-    }
-
-    private class AsyncCall implements Callable<Optional<CatalogInfo>> {
-        private String productId;
-        public AsyncCall(String productId) {
-            this.productId = productId;
-        }
-
-        public Optional<CatalogInfo> call(){
-            return fetchCatalogInfo(productId);
-        }
-    }
 }

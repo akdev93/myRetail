@@ -2,9 +2,7 @@ package com.myRetail.product.model;
 
 import org.apache.logging.log4j.Logger;
 
-/**
- * Created by koneria on 4/18/16.
- */
+
 public class AppError extends RuntimeException {
 
     public AppError(String message) {

@@ -16,9 +16,6 @@ import com.myRetail.product.proxy.CatalogServiceProxy;
 
 
 
-/**
- * Created by koneria on 4/17/16.
- */
 public class ProductInfoAggregator {
 
     private PricingDAO pricingDAO;

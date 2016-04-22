@@ -7,9 +7,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import com.myRetail.product.model.Error;
-/**
- * Created by koneria on 4/17/16.
- */
+
 @Provider
 public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundException> {
 

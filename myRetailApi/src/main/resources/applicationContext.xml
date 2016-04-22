@@ -12,7 +12,7 @@
         <property name="targetUrl" value="${CatalogServiceProxy.targetUrl}" />
     </bean>
 
-    <bean id="pricingDAO" class="com.myRetail.product.dao.PricingDAO" init-method="init" destroy-method="close">
+    <bean id="pricingDAO" class="com.myRetail.product.dao.CassandraPricingDAO" init-method="init" destroy-method="close">
         <property name="connectHost" value="${PricingDAO.connectHost}" />
         <property name="connectPort" value="${PricingDAO.connectPort}"/>
         <property name="keyspaceName" value="${PricingDAO.keyspaceName}" />

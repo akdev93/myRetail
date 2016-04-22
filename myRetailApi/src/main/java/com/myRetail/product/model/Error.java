@@ -3,9 +3,7 @@ package com.myRetail.product.model;
 import java.util.Date;
 
 
-/**
- * Created by koneria on 4/17/16.
- */
+
 public class Error {
     private Date date;
     private String message;

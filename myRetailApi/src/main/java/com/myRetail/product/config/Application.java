@@ -6,9 +6,6 @@ import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 
 import com.myRetail.product.resources.ProductResource;
 
-/**
- * Created by koneria on 4/17/16.
- */
 public class Application extends ResourceConfig {
 
     public Application() {

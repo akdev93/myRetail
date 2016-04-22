@@ -5,10 +5,8 @@ import com.myRetail.product.model.AppError;
 import com.myRetail.product.model.CatalogInfo;
 import com.myRetail.product.model.PriceInfo;
 import com.myRetail.product.model.ProductInfo;
-import junit.framework.Assert;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+
+
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ServerErrorException;
@@ -16,20 +14,12 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
-/**
- * Created by koneria on 4/20/16.
- */
 
-public class ProductResourceTest extends TestCase {
 
-    public ProductResourceTest(String testName) {
-        super(testName);
-    }
+public class ProductResourceTest {
 
-    public static Test suite() {
-        return new TestSuite(ProductResourceTest.class);
-    }
 
+    @org.junit.Test
     public void testWhenPriceInfoIsEmpty() {
         ProductInfoAggregator productInfoAggregator = mock(ProductInfoAggregator.class);
         Optional<ProductInfo> optionalPI = Optional.empty();
@@ -48,6 +38,7 @@ public class ProductResourceTest extends TestCase {
         }
     }
 
+    @org.junit.Test
     public void testWhenAppError() {
 
         ProductInfoAggregator productInfoAggregator = mock(ProductInfoAggregator.class);
@@ -67,6 +58,7 @@ public class ProductResourceTest extends TestCase {
 
     }
 
+    @org.junit.Test
     public void testValidResponseFromProductInfoAggregator() {
         ProductInfoAggregator productInfoAggregator = mock(ProductInfoAggregator.class);
         PriceInfo priceInfo = mock(PriceInfo.class);

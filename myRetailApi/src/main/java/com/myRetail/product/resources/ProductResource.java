@@ -13,9 +13,8 @@ import com.myRetail.product.model.ProductInfo;
 import java.util.Optional;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-/**
- * Created by koneria on 4/17/16.
- */
+
+
 @Path("product")
 public class ProductResource {
 
