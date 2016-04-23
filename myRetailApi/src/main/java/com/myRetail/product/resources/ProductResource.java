@@ -52,5 +52,17 @@ public class ProductResource {
         return optional.get();
     }
 
+
+    public void setProductPrice(@PathParam("id")String id, ProductInfo productInfo) {
+        if(!id.equals(productInfo.getId())) {
+            String msg = String.format("Product id in the payload(%s) does not match the path (%s)",productInfo.getId(), id);
+
+            Response response = Response.status(Response.Status.BAD_REQUEST).entity(new Error(new java.util.Date(), msg)).type(MediaType.APPLICATION_JSON).build();
+            throw new NotFoundException(response);
+        }
+        getProductInfo(id);
+        productInfoAggregator.updatePrice(productInfo);
+    }
+
 }
 

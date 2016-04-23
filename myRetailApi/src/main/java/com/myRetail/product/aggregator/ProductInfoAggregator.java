@@ -88,6 +88,10 @@ public class ProductInfoAggregator {
         return buildProductInfo(optionalCI, optionalPI);
     }
 
+    public void updatePrice(ProductInfo productInfo) {
+        pricingDAO.insertPrice(productInfo.getId(),productInfo.getPriceInfo().getPrice(),productInfo.getPriceInfo().getCurrencyCode());
+    }
+
     public void close() {
         pool.shutdown();
     }

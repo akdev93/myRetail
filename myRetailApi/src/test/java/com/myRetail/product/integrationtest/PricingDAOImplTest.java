@@ -9,6 +9,7 @@ import com.myRetail.product.dao.CassandraPricingDAO;
 import com.myRetail.product.model.PriceInfo;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -85,6 +86,32 @@ public class PricingDAOImplTest  {
         deletePrice(testProductId);
         Optional<PriceInfo> optPi = pricingDAO.getProductPrice(testProductId, "USD");
         org.junit.Assert.assertTrue("PriceInfo not empty for a invalid price ", !optPi.isPresent());
+    }
+
+    @Test
+    public void testInsertPrice() {
+        deletePrice(testProductId);
+        Optional<PriceInfo> optPi = pricingDAO.getProductPrice(testProductId, "USD");
+        org.junit.Assert.assertTrue("PriceInfo not empty for a invalid price ", !optPi.isPresent());
+        pricingDAO.insertPrice(testProductId,100.0f,"USD");
+        optPi = pricingDAO.getProductPrice(testProductId,"USD");
+        org.junit.Assert.assertTrue("PriceInfo empty even after insert ", optPi.isPresent());
+        org.junit.Assert.assertTrue("Price value is incorrect "+optPi.get().getPrice(), optPi.get().getPrice() == 100.0f);
+    }
+
+    @Test
+    public void testUpdatePrice() {
+        deletePrice(testProductId);
+        Optional<PriceInfo> optPi = pricingDAO.getProductPrice(testProductId, "USD");
+        org.junit.Assert.assertTrue("PriceInfo not empty for a invalid price ", !optPi.isPresent());
+        pricingDAO.insertPrice(testProductId,100.0f,"USD");
+        optPi = pricingDAO.getProductPrice(testProductId,"USD");
+        org.junit.Assert.assertTrue("PriceInfo empty even after insert ", optPi.isPresent());
+        org.junit.Assert.assertTrue("Price value is incorrect "+optPi.get().getPrice(), optPi.get().getPrice() == 100.0f);
+        org.junit.Assert.assertTrue("Price currency is incorrect "+optPi.get().getCurrencyCode(), optPi.get().getCurrencyCode().equals("USD"));
+        pricingDAO.insertPrice(testProductId,100.1f,"USD");
+        optPi = pricingDAO.getProductPrice(testProductId, "USD");
+        org.junit.Assert.assertTrue("Price value is incorrect "+optPi.get().getPrice(), optPi.get().getPrice() == 100.1f);
     }
 
     private void deletePrice(String productId) {
