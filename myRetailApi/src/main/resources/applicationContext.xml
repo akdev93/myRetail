@@ -8,7 +8,7 @@
 >
 
     <context:property-placeholder location="classpath:myRetailApi.properties" />
-    <bean id="catalogServiceProxy" class="com.myRetail.product.proxy.FakeCatalogServiceProxyImpl" init-method="init" >
+    <bean id="catalogServiceProxy" class="com.myRetail.product.proxy.RESTCatalogServiceProxyImpl" init-method="init" destroy-method="close">
         <property name="targetUrl" value="${CatalogServiceProxy.targetUrl}" />
     </bean>
 

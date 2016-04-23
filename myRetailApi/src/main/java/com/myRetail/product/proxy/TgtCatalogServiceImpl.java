@@ -9,4 +9,12 @@ public class TgtCatalogServiceImpl extends CatalogServiceProxy {
     public Optional<CatalogInfo> fetchCatalogInfo(String productId) {
         return Optional.empty();
     }
+
+    public void init() {
+
+    }
+
+    public void close() {
+
+    }
 }

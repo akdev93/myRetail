@@ -13,11 +13,15 @@ public abstract class CatalogServiceProxy extends AsyncDataAccess<CatalogInfo> {
 
     public abstract Optional<CatalogInfo> fetchCatalogInfo(String productId);
 
+    public abstract void init();
+
     public Future<Optional<CatalogInfo>> fetchCatalogInfoAsync(String productId, ExecutorService pool) {
         return getDataAsync(new Object[]{productId}, pool);
     }
     protected Optional<CatalogInfo> getData(Object[] args) {
         return fetchCatalogInfo((String)args[0]);
     }
+
+    public abstract void close();
 
 }

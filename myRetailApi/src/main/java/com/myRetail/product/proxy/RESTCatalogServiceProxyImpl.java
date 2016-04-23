@@ -1,7 +1,6 @@
 package com.myRetail.product.proxy;
 
 import java.util.Optional;
-import javax.annotation.PostConstruct;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
@@ -15,13 +14,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-public class FakeCatalogServiceProxyImpl extends CatalogServiceProxy {
+public class RESTCatalogServiceProxyImpl extends CatalogServiceProxy {
 
     private String targetUrl;
 
     private Client client;
 
-    private static final Logger logger = LogManager.getLogger(FakeCatalogServiceProxyImpl.class);
+    private static final Logger logger = LogManager.getLogger(RESTCatalogServiceProxyImpl.class);
 
 
     public Optional<CatalogInfo> fetchCatalogInfo(String productId) {
@@ -32,7 +31,7 @@ public class FakeCatalogServiceProxyImpl extends CatalogServiceProxy {
         Invocation.Builder invokationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invokeRestAPI(productId, invokationBuilder);
 
-        return getCatalogInfoFromResonse(response,productId);
+        return getCatalogInfoFromResponse(response,productId);
     }
 
     public String getTargetUrl() {
@@ -66,7 +65,7 @@ public class FakeCatalogServiceProxyImpl extends CatalogServiceProxy {
         return r;
     }
 
-    private Optional<CatalogInfo> getCatalogInfoFromResonse(Response r, String productId) {
+    private Optional<CatalogInfo> getCatalogInfoFromResponse(Response r, String productId) {
 
         Optional<CatalogInfo> optional = null;
 
@@ -78,5 +77,9 @@ public class FakeCatalogServiceProxyImpl extends CatalogServiceProxy {
             throw new AppError("Catalog fetch failure (Unexpected Http Status "+r.getStatus()+ ") when processing "+productId);
         }
         return optional;
+    }
+
+    public void close() {
+        client.close();
     }
 }

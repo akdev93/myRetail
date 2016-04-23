@@ -1,18 +1,14 @@
-package com.myRetail.product.dao;
+package com.myRetail.product.integrationtest;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
+import com.myRetail.product.dao.CassandraPricingDAO;
 import com.myRetail.product.model.PriceInfo;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
