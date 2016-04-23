@@ -1,6 +1,7 @@
 package com.myRetail.product.resources;
 
 import javax.inject.Inject;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -10,7 +11,11 @@ import com.myRetail.product.model.AppError;
 import com.myRetail.product.model.Error;
 import com.myRetail.product.model.ProductInfo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -32,7 +37,7 @@ public class ProductResource {
 
     @GET @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ProductInfo getProductInfo(@PathParam("id")String id) {
+    public ProductInfo getProductInfo(@PathParam("id") String id) {
 
         Optional<ProductInfo> optional;
         try {
@@ -43,8 +48,7 @@ public class ProductResource {
         }catch(AppError aE) {
             logger.error("Failed to process request for product "+id, aE);
             Error e = new Error(new java.util.Date(),aE.getMessage());
-            Response response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).type(MediaType.APPLICATION_JSON).build();
-            throw new ServerErrorException(String.format("Unable to process request for product %s",id), response, aE);
+            throw new ServerErrorException(String.format("Unable to process request for product %s",id),aE);
         }
 
         optional.orElseThrow(() -> new NotFoundException(String.format("Product Information not available for %s",id)));
@@ -53,15 +57,33 @@ public class ProductResource {
     }
 
 
-    public void setProductPrice(@PathParam("id")String id, ProductInfo productInfo) {
-        if(!id.equals(productInfo.getId())) {
-            String msg = String.format("Product id in the payload(%s) does not match the path (%s)",productInfo.getId(), id);
+    @PUT
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public ProductInfo setProductPrice(@PathParam("id")String id, ProductInfo productInfo) {
 
-            Response response = Response.status(Response.Status.BAD_REQUEST).entity(new Error(new java.util.Date(), msg)).type(MediaType.APPLICATION_JSON).build();
-            throw new NotFoundException(response);
+        List<String> errors = findErrorsInRequest(id, productInfo);
+        if(!errors.isEmpty()){
+            String errorMessage = errors.stream().map(i -> i.toString()).collect(Collectors.joining(", "));
+            throw new BadRequestException(errorMessage);
         }
+
         getProductInfo(id);
-        productInfoAggregator.updatePrice(productInfo);
+        return productInfoAggregator.updatePrice(productInfo).get();
+    }
+
+    protected List<String> findErrorsInRequest(String id, ProductInfo productInfo) {
+
+        List errors = new ArrayList<String>();
+        if(!id.equals(productInfo.getId())) {
+            errors.add(String.format("Product id in the payload(%s) does not match the path (%s)",productInfo.getId(), id));
+        }
+        if(productInfo.getPriceInfo().getPrice() < 0) {
+            errors.add(String.format("Product Price cannot be negative (%s)",productInfo.getPriceInfo().getPrice()));
+
+        }
+        return errors;
     }
 
 }

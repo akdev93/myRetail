@@ -31,6 +31,7 @@ public class ProductResourceTest {
             productResource.getProductInfo("1");
             fail("No exception was thrown when expected");
         }catch(Exception e) {
+            e.printStackTrace();
             org.junit.Assert.assertTrue(String.format("NotFoundException is not thrown when expected. Found %s", e.getClass().getName()),(e instanceof NotFoundException));
             NotFoundException nfe = (NotFoundException)e;
             org.junit.Assert.assertTrue(String.format("Invalid response code %s",nfe.getResponse().getStatusInfo().getStatusCode()),

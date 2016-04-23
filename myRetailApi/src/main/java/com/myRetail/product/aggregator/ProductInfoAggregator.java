@@ -88,8 +88,9 @@ public class ProductInfoAggregator {
         return buildProductInfo(optionalCI, optionalPI);
     }
 
-    public void updatePrice(ProductInfo productInfo) {
+    public Optional<ProductInfo> updatePrice(ProductInfo productInfo) {
         pricingDAO.insertPrice(productInfo.getId(),productInfo.getPriceInfo().getPrice(),productInfo.getPriceInfo().getCurrencyCode());
+        return getProductInfo(productInfo.getId(), productInfo.getPriceInfo().getCurrencyCode());
     }
 
     public void close() {
