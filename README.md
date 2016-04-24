@@ -232,8 +232,8 @@ This API accepts a payload that is the same structure as the response to the GET
 
 ## Design Decisions
 
-|ID|Decision|Rationale|
-|--|--------|---------|
+|ID  |Decision|Rationale|
+|----|--------|---------|
 |1 | The aggregation of the price and catalog information should be multi threaded | The lookup of the price does not depend on any information from the catalog retrieval. Hence, it can be done indepedently and parallel with the catalog fetch. This will save a couple of milliseconds on every request. This will help especially in high traffic low latency situations|
 |2 | The primary key for the table in cassandra should include product id and currency code | If in future we support multiple currencies and need to show prices in all currencies, the price lookup should not cause read against multiple partitions. By creating a composite primary key, all records for the product are stored in the same partition|
 |3 | Use JAX-RS to implment the REST API | Allows changes in provider with no change to the code. We use the JAX-RS reference implementation in Jersey |
