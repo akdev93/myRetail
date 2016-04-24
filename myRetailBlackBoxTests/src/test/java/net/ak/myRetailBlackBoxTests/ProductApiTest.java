@@ -24,13 +24,15 @@ import static org.junit.Assert.*;
 public class ProductApiTest
 
 {
-    private String testTargetURL = "http://localhost:8080/myRetailApi/product/";
+    private String testTargetURL;
     private Client client;
     private WebTarget webTarget;
 
 
     @Before
     public void setUp() {
+        testTargetURL = TestConfig.getInstance().getTestUrl()+"/product";
+        System.out.println("Using URL : "+testTargetURL);
         client = ClientBuilder.newClient();
         webTarget = client.target(testTargetURL);
     }

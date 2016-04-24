@@ -123,13 +123,24 @@ PricingDAO.connectPort=9042          # Cassandra port
 PricingDAO.keyspaceName=product_test # Keyspace name
 ```
 
-- To run the service 
+- To run the service. *_(This should execute all the unit tests and integration tests. To run the functional tests refer next section)_*
 ```
   $> cd $CODE_ROOT/myRetail/myRetailApi
   $> mvn tomcat7:run
 ```
 
 - Open a browser and  access the url `http://localhost:8080/myRetailApi/product/16696652` - you should see a JSON with the details of the product
+
+
+######Run Automated Functional Tests
+
+- Open `$CODE_ROOT/myRetail/myRetailBlackBoxTests/src/test/resources/blackboxtest.properties 
+- Validate the URL for the service. If you are running it the same box as myRetailApi, you should not need to change anything
+
+```
+   $> cd $CODE_ROOT/myRetail/myRetailBlackBoxTests/
+   $> mvn test
+```
 
 ## API documentation
 
