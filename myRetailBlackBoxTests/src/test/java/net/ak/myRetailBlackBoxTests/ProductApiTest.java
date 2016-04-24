@@ -61,7 +61,7 @@ public class ProductApiTest
 
         JSONObject currentPrice = (JSONObject)jsonObject.get("current_price");
         org.junit.Assert.assertTrue(String.format("Unexpected id found %s",jsonObject.get("id")),jsonObject.get("id").equals(productId));
-        org.junit.Assert.assertTrue(String.format("Unexpected name found %s",jsonObject.get("name")),jsonObject.get("name").equals("product 1"));
+        org.junit.Assert.assertTrue(String.format("Unexpected name found %s",jsonObject.get("name")),jsonObject.get("name").equals("Apple iPad Air 2 16GB Wi-Fi - Gold"));
         org.junit.Assert.assertTrue(String.format("Unexpected price found %s",currentPrice.get("value")),currentPrice.get("value").equals(new Double("11.01")));
         org.junit.Assert.assertTrue(String.format("Unexpected currency code found %s",currentPrice.get("currency_code")),currentPrice.get("currency_code").equals("USD"));
     }
