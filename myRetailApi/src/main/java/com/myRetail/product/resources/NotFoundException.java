@@ -5,9 +5,7 @@ import com.myRetail.product.model.Error;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-/**
- * Created by koneria on 4/23/16.
- */
+
 public class NotFoundException extends javax.ws.rs.NotFoundException {
 
     public NotFoundException(String message) {
