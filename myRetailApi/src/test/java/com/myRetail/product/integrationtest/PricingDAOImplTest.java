@@ -41,7 +41,7 @@ public class PricingDAOImplTest  {
         String keyspaceName = p.getProperty("PricingDAO.keyspaceName");
         int connectPort = Integer.parseInt(p.getProperty("PricingDAO.connectPort"));
         System.out.println(String.format("Connection parameters to database (%s,%s,%s)",connectHost,connectPort,keyspaceName));
-        cluster = Cluster.builder().addContactPoint(connectHost).withRetryPolicy(DefaultRetryPolicy.INSTANCE).build();
+        cluster = Cluster.builder().addContactPoint(connectHost).withPort(connectPort).withRetryPolicy(DefaultRetryPolicy.INSTANCE).build();
         session = cluster.connect(keyspaceName);
 
         session.execute(String.format("insert into product_price(product_id,currency_code,selling_price) values('%s','USD',10.0)",testProductId));

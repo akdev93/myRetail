@@ -57,7 +57,7 @@ public class CassandraPricingDAO extends PricingDAO {
         logger.info(String.format("Connect Port  : %s ",connectPort));
         logger.info(String.format("Keyspace Name : %s ",keyspaceName));
 
-        cluster = Cluster.builder().addContactPoint(connectHost).withRetryPolicy(DefaultRetryPolicy.INSTANCE).build();
+        cluster = Cluster.builder().addContactPoint(connectHost).withPort(connectPort).withRetryPolicy(DefaultRetryPolicy.INSTANCE).build();
         session = cluster.connect(keyspaceName);
         logger.info(String.format("Connection established with the connect host %s for keyspace %s",connectHost,keyspaceName));
         psSelect = session.prepare("select * from product_price where product_id=? and currency_code=?");
