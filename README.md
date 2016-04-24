@@ -96,7 +96,7 @@ The steps are explained below. It is assumed that you have cassandra running at 
 ```
 
 - To configure the service follow the steps below
-  - Open $CODE_ROOT/myRetail/myRetailApi/src/main/resources/myRetailApi.properties
+  - Open `$CODE_ROOT/myRetail/myRetailApi/src/main/resources/myRetailApi.properties`
   - Update the properties below for your environment
 
 ```
@@ -105,7 +105,7 @@ PricingDAO.connectPort=9042          # Cassandra port
 PricingDAO.keyspaceName=product_test # Keyspace name
 ```
 
-  - Open $CODE_ROOT/myRetail/myRetailApi/src/test/resources/test.properties
+  - Open `$CODE_ROOT/myRetail/myRetailApi/src/test/resources/test.properties`
   - Update the properties below for your environment
 
 ```
@@ -123,6 +123,23 @@ PricingDAO.keyspaceName=product_test # Keyspace name
 - Open a browser and  access the url `http://localhost:8080/myRetailApi/product/16696652` - you should see a JSON with the details of the product
 
 ## API documentation
+
+
+
+|API      | `/myRetailApi/product/{id}`|
+|Response |
+
+```
+{
+  "id": "16696652",
+  "name": "product 3",
+  "current_price": {
+    "value": 11.03,
+    "currency_code": "USD"
+  }
+}
+```
+|
 ## Design Decisions
 
 ## Components
