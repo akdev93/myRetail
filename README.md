@@ -2,6 +2,13 @@
 
 This repository contains all the artifacts to build an aggregation service to vend product infromation. The product information consists of the catalog information and the current selling price of the product both of which are compiled from disparate sources. The catalog information is obtained from an external API while the pricing information is looked up from a NoSQL data store.  The service also contains API to update the price to a provided value after performing validations on the input.
 
+This Repository has 3 modules
+
+|Module | Description |
+|-------|-------------|
+|myRetailApi| Contains the product api that aggregates price and catalog information. It also contains the price update api|
+|myRetailApiBlackboxTests | Functional tests for myRetailApi |
+|app5 | A simple "mock" service that is used to create the catalog service for this app|
 
 ## Assumptions
 
@@ -263,6 +270,9 @@ The update of price does not use any multi threading. The request is validated b
 
 ```
 
-     User Request   ---(PUT)--->  ProductResource ---->  ProductInfoAggregator ---|---> PricingDAO  ----> (Cassandra db to lookup price)
-                                  (REST Resource)                                 
+     User Request   ---(PUT)--->  ProductResource -(lookup to validate)--> ProductInfoAggregator ----|---> CatalogInfoProxy 
+                                  (REST Resource)                                                    |
+                                        |                                                            +---> PricingDAO      
+                                    (update price)
+                                        +--->  ProductInfoAggregator ---|---> PricingDAO  ----> (Cassandra db to lookup price)
 ```
