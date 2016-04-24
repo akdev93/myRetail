@@ -1,18 +1,19 @@
 package com.myRetail.product.integrationtest;
 
-/**
- * Created by koneria on 4/22/16.
- */
+
 
 import com.myRetail.product.model.AppError;
 import com.myRetail.product.model.CatalogInfo;
 import com.myRetail.product.proxy.RESTCatalogServiceProxyImpl;
+import com.myRetail.product.resources.TestConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,7 +23,7 @@ import java.util.concurrent.Future;
 public class CatalogServiceProxyImplTest {
 
 
-    private String targetUrl="http://localhost:8080/app5/myApp/products/v3";
+    private String targetUrl="https://catalogservice-1291.appspot.com/api/products/v3";
 
     private RESTCatalogServiceProxyImpl catalogServiceProxy ;
 
@@ -32,6 +33,10 @@ public class CatalogServiceProxyImplTest {
 
     @Before
     public void setUp() {
+        Properties p = TestConfig.getInstance().getProperties();
+        targetUrl = p.getProperty("TestUrlForCatalog");
+        System.out.println("Testing against url :"+targetUrl);
+
 
         catalogServiceProxy = new RESTCatalogServiceProxyImpl();
         catalogServiceProxy.setTargetUrl(targetUrl);

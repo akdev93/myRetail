@@ -7,26 +7,22 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.myRetail.product.dao.CassandraPricingDAO;
 import com.myRetail.product.model.PriceInfo;
+import com.myRetail.product.resources.TestConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
-
 
 public class PricingDAOImplTest  {
 
     private Cluster cluster;
     private Session session;
-    private String connectHost = "localhost";
-    private String keyspaceName = "product_test";
-    private int connectPort = 7000;
+
     private CassandraPricingDAO pricingDAO;
     private static final String testProductId="1234";
     private static PreparedStatement insertPS;
@@ -39,6 +35,12 @@ public class PricingDAOImplTest  {
 
     @Before
     public void setUp() {
+        Properties p = TestConfig.getInstance().getProperties();
+
+        String connectHost = p.getProperty("PricingDAO.connectHost");
+        String keyspaceName = p.getProperty("PricingDAO.keyspaceName");
+        int connectPort = Integer.parseInt(p.getProperty("PricingDAO.connectPort"));
+        System.out.println(String.format("Connection parameters to database (%s,%s,%s)",connectHost,connectPort,keyspaceName));
         cluster = Cluster.builder().addContactPoint(connectHost).withRetryPolicy(DefaultRetryPolicy.INSTANCE).build();
         session = cluster.connect(keyspaceName);
 
@@ -53,10 +55,7 @@ public class PricingDAOImplTest  {
     @After
     public void tearDown() {
         deletePrice(testProductId);
-        long t1 = System.currentTimeMillis();
         cluster.closeAsync();
-        long t2 = System.currentTimeMillis();
-        System.out.println("Time to close "+(t2-t1));
         pricingDAO.close();
     }
 
