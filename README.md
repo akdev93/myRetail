@@ -125,23 +125,40 @@ PricingDAO.keyspaceName=product_test # Keyspace name
 ## API documentation
 
 
+#### API : `/myRetailApi/product/{id}`
 
-|Aspect      | Details|
-|------------|--------|
-|API         | `/myRetailApi/product/{id}`|
-|Response    |
+This API returns the product infromation which includes the catalog information and the associated price in USD where `id` is the identifier of the product 
+
+##### Response
 
 ```
-{
-  "id": "16696652",
-  "name": "product 3",
-  "current_price": {
-    "value": 11.03,
-    "currency_code": "USD"
-  }
-}
+    {
+      "id": "16696652",
+      "name": "product 3",
+      "current_price": {
+        "value": 11.03,
+        "currency_code": "USD"
+      }
+    }
 ```
-|
+
+|Attribute       | Description                                     |
+|----------      |------------                                     |
+|`id`            | Identifier for the product                      |
+|`name`          | Short description of the product                |
+|`current_price` | JSON object containing the price of the product |
+|`value`         | Current price                                   |
+|`currency_code` | Currency code associated with the current price |
+
+
+
+|Status Code     | Description                                     |
+|----------      |------------                                     |
+|`404`           | Product not found                               |
+|`500`           | Application Error (Could not process request)   |
+|`200`           | Processing successful. Should generate the product information |
+
+
 
 ## Design Decisions
 
