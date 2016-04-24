@@ -13,6 +13,7 @@ Below are the assumptions made in implementing the APIs contained in the service
   - The resource identifier for the price should match the payload
 - The service is has an aggregation function to aggregate data from the catalog service, but does not acts an authority for the catalog data. No validation are peformed on the productId
 - Only currency code supported is "USD" although the implementation beyond the API layer can support multiple currency codes
+- Only complete product information should be vended by the service. If either catalog or price is missing, it should be treated as if the product was not found. _(In complete or defaulted information should not be returned)_
 
 ## Technical Details
 ### Technologies and APIs used
@@ -240,3 +241,28 @@ This API accepts a payload that is the same structure as the response to the GET
 
 ## Design
 
+The design uses an aggregator that multithreads the catalog fetch and the price lookup. Below are the components and their roles and their interaction
+
+| Component |  Role |
+|-----------|-------|
+|ProductResource | Is the entry point for every API. It implements the REST fascade to vend or update information using the relevant verbs and http status codes following REST principles|
+|ProductInfoAggregator | uses a thread pool to aggregate information from the catalog service and the pricing database. Processes updates to the pricing database |
+|CatalogServiceProxy   | An Abstraction for the catalog service. A concrete implementation `RESTCatalogServiceProxyImpl` is used to interact with the catalog service|
+|PricingDAO  | An abstraction for accessing pricing data. A concrete implementation `CassandraPricingDAO` is used to lookup the pricing from the cassandra pricing DB|
+|AsyncDataAccess | An abstraction that provides the functionality to fetch data asynchronously. Both the `CatalogServiceProxy` as well as `PricingDAO` extend this abstraction|
+
+
+```
+
+     User Request   ---(GET)--->  ProductResource ---->  ProductInfoAggregator ---|---> CatalogInfoProxy -----> (External service for the catalog information)
+                                  (REST Resource)                                 |
+                                                                                  +---> PricingDAO       -----> (Cassandra db to lookup price)
+```
+
+The update of price does not use any multi threading. The request is validated by `ProductResource` and delegated to `ProductInfoAggregator` which processes the pricing using the `PricingDAO`
+
+```
+
+     User Request   ---(PUT)--->  ProductResource ---->  ProductInfoAggregator ---|---> PricingDAO  ----> (Cassandra db to lookup price)
+                                  (REST Resource)                                 
+```
