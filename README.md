@@ -126,8 +126,10 @@ PricingDAO.keyspaceName=product_test # Keyspace name
 
 
 
-|API      | `/myRetailApi/product/{id}`|
-|Response |
+|Aspect      | Details|
+|------------|--------|
+|API         | `/myRetailApi/product/{id}`|
+|Response    |
 
 ```
 {
@@ -140,6 +142,7 @@ PricingDAO.keyspaceName=product_test # Keyspace name
 }
 ```
 |
+
 ## Design Decisions
 
 ## Components
