@@ -125,9 +125,15 @@ PricingDAO.keyspaceName=product_test # Keyspace name
 ## API documentation
 
 
-#### API : `/myRetailApi/product/{id}`
+#### API : (GET) `/myRetailApi/product/{id}`  
 
 This API returns the product infromation which includes the catalog information and the associated price in USD where `id` is the identifier of the product 
+
+
+##### Request Payload
+
+This API does not expect a payload
+
 
 ##### Response
 
@@ -160,7 +166,70 @@ This API returns the product infromation which includes the catalog information 
 
 
 
+#### API : (PUT) `/myRetailApi/product/{id}`  
+
+This API accepts a payload that is the same structure as the response to the GET and updates the price in the pricing database. The following validations are done in processing the request 
+
+- The `id` element in the path  should match the `id` in the  payload
+- The price should be greater than or equal to 0
+- The catalog information should be available to accept the price
+
+
+##### Request Payload
+
+
+```
+    {
+      "id": "16696652",
+      "name": "product 3",
+      "current_price": {
+        "value": 11.03,
+        "currency_code": "USD"
+      }
+    }
+```
+
+|Attribute       | Description                                     |
+|----------      |------------                                     |
+|`id`            | Identifier for the product                      |
+|`name`          | Short description of the product                |
+|`current_price` | JSON object containing the price of the product |
+|`value`         | Current price                                   |
+|`currency_code` | Currency code associated with the current price |
+
+
+##### Response
+
+```
+    {
+      "id": "16696652",
+      "name": "product 3",
+      "current_price": {
+        "value": 11.03,
+        "currency_code": "USD"
+      }
+    }
+```
+
+|Attribute       | Description                                     |
+|----------      |------------                                     |
+|`id`            | Identifier for the product                      |
+|`name`          | Short description of the product                |
+|`current_price` | JSON object containing the price of the product |
+|`value`         | Current price (After the udpate)                |
+|`currency_code` | Currency code associated with the current price |
+
+
+
+|Status Code     | Description                                     |
+|----------      |------------                                     |
+|`404`           | Product not found                               |
+|`400`           | if ID in teh path does not match the id in the payload or if the price is < 0   |
+|`200`           | Processing successful. Should generate the product information |
+|`500`           | Application Error (Could not process request)   |
+
+
 ## Design Decisions
 
-## Components
+## Design
 
