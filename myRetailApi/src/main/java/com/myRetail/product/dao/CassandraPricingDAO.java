@@ -7,6 +7,7 @@ import com.myRetail.product.model.PriceInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -60,8 +61,12 @@ public class CassandraPricingDAO extends PricingDAO {
         cluster = Cluster.builder().addContactPoint(connectHost).withPort(connectPort).withRetryPolicy(DefaultRetryPolicy.INSTANCE).build();
         session = cluster.connect(keyspaceName);
         logger.info(String.format("Connection established with the connect host %s for keyspace %s",connectHost,keyspaceName));
-        psSelect = session.prepare("select * from product_price where product_id=? and currency_code=?");
-        psInsert = session.prepare("insert into product_price(product_id,currency_code,selling_price) values(?,?,?)");
+        String statementForSelect = "select * from product_price where product_id=? and currency_code=?";
+        String statementForInsert = "insert into product_price(product_id,currency_code,selling_price) values(?,?,?)";
+        logger.info(String.format("Preparing statement for select:%s",statementForSelect));
+        psSelect = session.prepare(statementForSelect);
+        logger.info(String.format("Preparing statement for insert:%s",statementForInsert));
+        psInsert = session.prepare(statementForInsert);
     }
 
     public Optional<PriceInfo> getProductPrice(String productId, String currencyCode) {
@@ -69,23 +74,29 @@ public class CassandraPricingDAO extends PricingDAO {
 
         Row r = results.one();
         Optional<PriceInfo> optional = null;
-        if(r == null)
+        if(r == null) {
+            logger.warn(String.format("No price info found for %s (%s) ",productId, currencyCode));
             return optional.empty();
+        }
 
         PriceInfo pi = new PriceInfo(productId,r.getFloat("selling_price"),r.getString("currency_code"));
+        logger.info(String.format("Price Information for %s is (%s)",productId, Objects.toString(pi)));
         return Optional.of(pi);
     }
 
     public void insertPrice(String productId, float price, String currencyCode) {
         try {
             session.execute(psInsert.bind(productId,currencyCode, new Float(price)));
+            logger.info("Inserted price info (%s,%s,%s)",productId, price, currencyCode);
         }catch(Exception e) {
-            throw new AppError(String.format("Error in inserting price (%f) for product (%s) in currency (%s)",price,productId,currencyCode),e);
+            throw new AppError(String.format("Error in inserting price (%f) for product (%s) in currency (%s)",
+                    price,productId,currencyCode),e,logger);
         }
     }
 
     public void close() {
-        cluster.close();
+        cluster.closeAsync();
+        logger.info("Closure of connections is scheduled (ASync)");
     }
 
 
@@ -97,7 +108,7 @@ public class CassandraPricingDAO extends PricingDAO {
             rs = session.execute(bs);
         }catch(Exception e) {
             logger.error(String.format("failed to execute query %s with parameters %s %s", psSelect.getQueryString(), productId,currencyCode));
-            throw new AppError("Error in fetching price for Product "+productId, e);
+            throw new AppError("Error in fetching price for Product "+productId, e,logger);
         }
         return rs;
     }

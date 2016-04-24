@@ -48,4 +48,13 @@ public class ProductInfo {
     public void setPriceInfo(PriceInfo priceInfo) {
         this.priceInfo = priceInfo;
     }
+
+    @Override
+    public String toString() {
+        return "ProductInfo{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", priceInfo=" + priceInfo +
+                '}';
+    }
 }

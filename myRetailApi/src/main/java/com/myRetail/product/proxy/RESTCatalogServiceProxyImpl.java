@@ -43,22 +43,17 @@ public class RESTCatalogServiceProxyImpl extends CatalogServiceProxy {
         this.targetUrl = targetUrl;
     }
 
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
     public void init() {
         client = ClientBuilder.newClient();
+        logger.info("Created client for the webservice");
     }
 
     private Response invokeRestAPI(String productId, Invocation.Builder invocationBuilder) {
         Response r = null;
         try {
+            logger.debug(String.format("Calling the service for %s ",productId));
             r = invocationBuilder.get();
+            logger.debug(String.format("Response obtained from service for %s ",productId));
         }catch(Exception e) {
             throw new AppError("Unable to get the catalog information for product "+productId, e,logger);
         }
@@ -68,18 +63,24 @@ public class RESTCatalogServiceProxyImpl extends CatalogServiceProxy {
     private Optional<CatalogInfo> getCatalogInfoFromResponse(Response r, String productId) {
 
         Optional<CatalogInfo> optional = null;
+        logger.debug(String.format("Response status code %s and family ",
+                r.getStatus(),r.getStatusInfo().getFamily()));
 
         if(r.getStatusInfo().getFamily().equals((Response.Status.Family.SUCCESSFUL))) {
             optional = Optional.of(r.readEntity(CatalogInfo.class));
         } else if(r.getStatusInfo().getFamily().equals(Response.Status.Family.CLIENT_ERROR)) {
             optional = Optional.empty();
         } else {
-            throw new AppError("Catalog fetch failure (Unexpected Http Status "+r.getStatus()+ ") when processing "+productId);
+            throw new AppError(
+                String.format("Catalog fetch failure (Unexpected Http Status %s) when processing %s ",
+                        r.getStatus(),productId),logger);
         }
+        logger.info(String.format("Catalog info for %s:%s ",productId,optional));
         return optional;
     }
 
     public void close() {
         client.close();
+        logger.info("Closed connections to the webservice");
     }
 }

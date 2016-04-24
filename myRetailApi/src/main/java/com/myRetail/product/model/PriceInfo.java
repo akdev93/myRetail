@@ -11,6 +11,8 @@ public class PriceInfo {
     @XmlElement(name="value")
     private float price;
 
+
+
     @XmlElement(name="currency_code")
     private String currencyCode;
 
@@ -47,5 +49,14 @@ public class PriceInfo {
 
     public void setCurrencyCode(String currencyCode) {
         this.currencyCode = currencyCode;
+    }
+
+    @Override
+    public String toString() {
+        return "PriceInfo{" +
+                "price=" + price +
+                ", currencyCode='" + currencyCode + '\'' +
+                ", productId='" + productId + '\'' +
+                '}';
     }
 }

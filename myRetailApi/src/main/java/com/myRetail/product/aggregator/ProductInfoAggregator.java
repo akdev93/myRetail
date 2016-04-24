@@ -13,7 +13,8 @@ import com.myRetail.product.model.CatalogInfo;
 import com.myRetail.product.model.PriceInfo;
 import com.myRetail.product.model.ProductInfo;
 import com.myRetail.product.proxy.CatalogServiceProxy;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public class ProductInfoAggregator {
@@ -22,6 +23,7 @@ public class ProductInfoAggregator {
     private CatalogServiceProxy catalogServiceProxy;
     private ExecutorService pool;
 
+    private static final Logger logger = LogManager.getLogger(ProductInfoAggregator.class);
 
 
     private int poolSize = 1;
@@ -54,15 +56,21 @@ public class ProductInfoAggregator {
 
     public void setPoolSize(int poolSize) {
         this.poolSize = poolSize;
+        logger.info(String.format("Pool size in ProductInfoAggregator set to %s",this.poolSize));
     }
 
     public void init() {
         pool = Executors.newFixedThreadPool(poolSize);
+        logger.info(String.format("Initialized ProductInfoAggregator with thread pool(%s)",poolSize));
     }
 
     public Optional<ProductInfo> getProductInfo(String productId, String currencyCode) {
+        logger.info(String.format("Fetching product information and price information for product id (%s) and currency code (%s)",
+                productId,currencyCode));
         Optional<CatalogInfo> optionalCI = catalogServiceProxy.fetchCatalogInfo(productId);
+        logger.debug("Catalog info from the catalog service is complete (Sync)");
         Optional<PriceInfo> optionalPI = pricingDAO.getProductPrice(productId,currencyCode);
+        logger.debug("Price Lookup is complete (Sync)");
         return buildProductInfo(optionalCI, optionalPI);
     }
 
@@ -71,36 +79,42 @@ public class ProductInfoAggregator {
         Future<Optional<CatalogInfo>> futureCI = catalogServiceProxy.fetchCatalogInfoAsync(productId,pool);
         Future<Optional<PriceInfo>> futurePI = pricingDAO.getProductPriceAsync(productId,currencyCode,pool);
 
-        Optional<CatalogInfo> optionalCI = null;
-        Optional<PriceInfo> optionalPI = null;
+        Optional<CatalogInfo> optionalCI;
+        Optional<PriceInfo> optionalPI;
         try {
              optionalCI = futureCI.get();
+             logger.debug("Catalog info from the catalog service is complete (ASync)");
              optionalPI = futurePI.get();
-
+             logger.debug("Price Lookup is complete (ASync)");
         }catch(InterruptedException ieE) {
-            throw new AppError("Could not fetch catalog or price info due to thread interruption ", ieE);
+            throw new AppError("Could not fetch catalog or price info due to thread interruption ", ieE,logger);
         }catch(ExecutionException eE) {
-            AppError ae = unwrapException(eE);
-            throw ae;
+            throw unwrapException(eE);
         }
 
 
+        logger.info(String.format("Product Information obtained for product id %s and currency code %s",
+                productId, currencyCode));
         return buildProductInfo(optionalCI, optionalPI);
     }
 
     public Optional<ProductInfo> updatePrice(ProductInfo productInfo) {
-        pricingDAO.insertPrice(productInfo.getId(),productInfo.getPriceInfo().getPrice(),productInfo.getPriceInfo().getCurrencyCode());
+        logger.info(String.format("Updating price for product %s",productInfo.getId()));
+        pricingDAO.insertPrice(productInfo.getId(),productInfo.getPriceInfo().getPrice(),
+                productInfo.getPriceInfo().getCurrencyCode());
+        logger.info("Fetching the updating product info");
         return getProductInfo(productInfo.getId(), productInfo.getPriceInfo().getCurrencyCode());
     }
 
     public void close() {
         pool.shutdown();
+        logger.info("Thread pool in ProductInfoAggregator has been shutdown");
     }
 
 
     protected Optional<ProductInfo> buildProductInfo(Optional<CatalogInfo> optionalCI, Optional<PriceInfo> optionalPI) {
-        System.out.println("ci:"+optionalCI);
-        System.out.println("pi:"+optionalPI);
+        logger.debug("Catalog Info used to build ProductInfo:"+optionalCI);
+        logger.debug("Price Info used to build CatalogInfo:"+optionalPI);
         if(!optionalCI.isPresent() || !optionalPI.isPresent()) {
             return Optional.empty();
         }
@@ -109,9 +123,12 @@ public class ProductInfoAggregator {
 
 
     protected AppError unwrapException(ExecutionException ee) {
+        logger.error(String.format("Unwrapping Exception (%s)",ee.getClass().getName()));
         Throwable t = ee.getCause();
         if(t instanceof AppError)
             return (AppError)t;
+
+        logger.error("Exception not of type AppError. Creating a new AppError");
         return new AppError(t);
     }
 

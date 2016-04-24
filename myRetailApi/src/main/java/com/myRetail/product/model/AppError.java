@@ -22,9 +22,15 @@ public class AppError extends RuntimeException {
     }
 
     public AppError(String message, Throwable cause, Logger logger) {
-        super(message,cause);
+        this(message,cause);
         logger.error(message, cause);
     }
+
+    public AppError(String message,  Logger logger) {
+        this(message);
+        logger.error(message);
+    }
+
     public AppError() {
     }
 }

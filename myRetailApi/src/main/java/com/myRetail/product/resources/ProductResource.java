@@ -60,7 +60,6 @@ public class ProductResource {
         return optional.get();
     }
 
-
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -70,10 +69,13 @@ public class ProductResource {
         List<String> errors = findErrorsInRequest(id, productInfo);
         if(!errors.isEmpty()){
             String errorMessage = errors.stream().map(i -> i.toString()).collect(Collectors.joining(", "));
+            logger.error(String.format("Errors found in the request :%s",errorMessage));
             throw new BadRequestException(errorMessage);
         }
 
+        logger.info(String.format("Checking if the catalog information exists for the product : %s",id));
         getProductInfo(id);
+        logger.info(String.format("Updating price for %s : %s",id,productInfo.getPriceInfo()));
         return productInfoAggregator.updatePrice(productInfo).get();
     }
 
