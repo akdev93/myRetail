@@ -174,6 +174,22 @@ public class ProductApiTest
                 response.getStatusInfo().equals(Response.Status.BAD_REQUEST));
     }
 
+    @Test
+    public void testPriceUpdateApiForNonExistantProduct() throws Exception {
+        String productId="156437931a";
+        String updatedPrice = "11.0512";
+        String updatePayload = String.format (
+                "{\"id\":\"156437931a\",\"name\":\"product 5\",\"current_price\":{\"value\":%s,\"currency_code\":\"USD\"}}",updatedPrice);
+
+
+        webTarget = webTarget.path(productId);
+        Response response = performPriceUpdate(updatePayload,webTarget);
+        System.out.println(response.readEntity(String.class));
+
+        org.junit.Assert.assertTrue( String.format("Response has unexpected status %s", response.getStatus()),
+                response.getStatusInfo().equals(Response.Status.NOT_FOUND));
+    }
+
     private Response getProduct(String productId, WebTarget webTarget) {
        Invocation.Builder invokationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invokationBuilder.get();
