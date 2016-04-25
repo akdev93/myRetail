@@ -36,7 +36,7 @@ To install and run the service you will either need an existing cassandra instan
 
 ######Prerequisites
 1. Java 8 (Oracle Java Platform, Standard Edition 8 (JDK))
-2. Python 2.6+
+2. Python 2.7+
 
 
 ######Installation Instructions
