@@ -3,12 +3,7 @@ package com.myRetail.product.resources;
 import javax.inject.Inject;
 
 import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.PUT;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import com.myRetail.product.aggregator.ProductInfoAggregator;
@@ -19,10 +14,12 @@ import com.myRetail.product.model.ProductInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.ThreadContext;
 
 /**
  * <p>
@@ -55,14 +52,17 @@ public class ProductResource {
     /**
      * Returns the product information obtained by aggregating the catalog information from the catalog service
      * and price from the pricing database
-     * @param id Product identifier
+     * @param id Product identifier (obtained from the path)
+     * @param requestId Unique identifer for the request (obtained from header x-request-id)
      * @return ProductInfo
      */
     @GET @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ProductInfo getProductInfo(@PathParam("id") String id) {
+    public ProductInfo getProductInfo(@PathParam("id") String id, @HeaderParam("x-request-id")String requestId) {
 
         Optional<ProductInfo> optional;
+        setupThreadContext(Optional.ofNullable(requestId));
+
         try {
             logger.warn("Defaulting curency to USD");
             logger.info(String.format("Starting Product and Price aggregation for %s ",id));
@@ -134,5 +134,17 @@ public class ProductResource {
         return errors;
     }
 
+    protected void setupThreadContext(Optional<String> optRequestId) {
+        String requestId = "";
+        if(!optRequestId.isPresent()) {
+            logger.debug("No request id found. Generating a new one");
+            requestId = UUID.randomUUID().toString();
+        }else{
+            requestId = optRequestId.get();
+        }
+
+        logger.debug("RequestId "+requestId);
+        ThreadContext.put("requestId", requestId);
+    }
 }
 

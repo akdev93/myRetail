@@ -293,6 +293,40 @@ public class ProductApiTest
 
     }
 
+    @Test
+    public void testGetProductWithPriceandXRequestHeader() throws Exception {
+
+        logTestExecutionDetail("\nTest             | testGetProductWithPrice");
+        logTestExecutionDetail("Test Description | This runs a positive case scenario where the catalog and price information is available for a product with x-request-id header");
+        String productId="15117729";
+        logTestExecutionDetail("Test Data        | productId="+productId);
+
+        webTarget = webTarget.path(productId);
+
+        Invocation.Builder invokationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+        String requestId= "test-"+System.currentTimeMillis();
+        System.out.println("x-request-id :"+requestId);
+        invokationBuilder.header("x-request-id",requestId);
+        Response response = invokationBuilder.get();
+        org.junit.Assert.assertTrue(String.format("Response had unexpected status code %s",response.getStatus()),
+                response.getStatusInfo().getFamily().equals((Response.Status.Family.SUCCESSFUL)));
+        logTestExecutionDetail("Response validated "+response.getStatus());
+        org.junit.Assert.assertTrue( String.format("Response has unexpected media type %s", response.getMediaType().toString()),
+                response.getMediaType().toString().equals("application/json"));
+        logTestExecutionDetail("MediaType validated "+response.getMediaType());
+
+
+        JSONObject jsonObject = readJSON(response);
+
+        JSONObject currentPrice = (JSONObject)jsonObject.get("current_price");
+        org.junit.Assert.assertTrue(String.format("Unexpected id found %s",jsonObject.get("id")),jsonObject.get("id").equals(productId));
+        org.junit.Assert.assertTrue(String.format("Unexpected name found %s",jsonObject.get("name")),jsonObject.get("name").equals("Apple iPad Air 2 16GB Wi-Fi - Gold"));
+        org.junit.Assert.assertTrue(String.format("Unexpected price found %s",currentPrice.get("value")),currentPrice.get("value").equals(new Double("11.01")));
+        org.junit.Assert.assertTrue(String.format("Unexpected currency code found %s",currentPrice.get("currency_code")),currentPrice.get("currency_code").equals("USD"));
+        logTestExecutionDetail("Price validations are successful");
+        logTestExecutionDetail("\n");
+    }
+
     private Response getProduct(String productId, WebTarget webTarget) {
        Invocation.Builder invokationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invokationBuilder.get();

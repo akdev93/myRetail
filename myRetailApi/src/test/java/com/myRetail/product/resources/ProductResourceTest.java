@@ -29,7 +29,7 @@ public class ProductResourceTest {
         ProductResource productResource = new ProductResource(productInfoAggregator);
 
         try {
-            productResource.getProductInfo("1");
+            productResource.getProductInfo("1","fake-request-id");
             fail("No exception was thrown when expected");
         }catch(Exception e) {
             e.printStackTrace();
@@ -49,7 +49,7 @@ public class ProductResourceTest {
         ProductResource productResource = new ProductResource(productInfoAggregator);
 
         try {
-            productResource.getProductInfo("1");
+            productResource.getProductInfo("1", "fake-request-id");
             fail("no exception was thrown when expected");
         }catch(Exception e) {
             org.junit.Assert.assertTrue(String.format("ServerErrorException is not thrown when expected. Found %s",e.getClass().getName()), (e instanceof ServerErrorException));
@@ -70,7 +70,7 @@ public class ProductResourceTest {
 
         ProductResource productResource = new ProductResource(productInfoAggregator);
         try {
-            ProductInfo productInfo = productResource.getProductInfo("1");
+            ProductInfo productInfo = productResource.getProductInfo("1", "fake-request-id");
         }catch(Exception e) {
             fail("Unexpected failure found even productInfoAggregator returns valid response");
         }
