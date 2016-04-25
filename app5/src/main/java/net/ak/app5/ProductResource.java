@@ -19,13 +19,13 @@ public class ProductResource {
     private Map<String,String> products = new HashMap<String, String>();
 
     public ProductResource() {
-        products.put("15117729", "product 1");
-        products.put("16483589", "product 2");
-        products.put("16696652", "product 3");
-        products.put("16752456", "Product 4");
-        products.put("15643793", "product 5");
-        products.put("18643793", "product A");
-        products.put("12345678", "product (for test)");
+        products.put("15117729", "Apple iPad Air 2 16GB Wi-Fi - Gold");
+        products.put("16483589", "iPhone 6 Plus - AT&T");
+        products.put("16696652", "Beats Solo 2 Wireless Headphones - Assorted Colors");
+        products.put("16752456", "Legos Super Heroes The Tumbler 76023");
+        products.put("15643793", "Darley 4 Shelf Bookcase - Vintage Oak");
+        products.put("18643793", "Millsboro Bookcase with Storage - Threshold");
+        products.put("12345678", "test product (for test)");
 
     }
     @GET @Path("{id}")

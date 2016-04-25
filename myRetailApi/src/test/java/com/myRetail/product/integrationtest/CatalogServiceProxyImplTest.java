@@ -50,7 +50,7 @@ public class CatalogServiceProxyImplTest {
         Optional<CatalogInfo> optCI = catalogServiceProxy.fetchCatalogInfo(productId);
         org.junit.Assert.assertTrue("CatalogInfo is empty ", optCI.isPresent());
         org.junit.Assert.assertTrue("Unexpected productId in response ", optCI.get().getId().equals(productId));
-        org.junit.Assert.assertTrue(String.format("Unexpected Product Name in response %s",optCI.get().getName()), "product 1".equals(optCI.get().getName()));
+        org.junit.Assert.assertTrue(String.format("Unexpected Product Name in response %s",optCI.get().getName()), "Apple iPad Air 2 16GB Wi-Fi - Gold".equals(optCI.get().getName()));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class CatalogServiceProxyImplTest {
 
         org.junit.Assert.assertTrue("CatalogInfo is empty ", optCI.isPresent());
         org.junit.Assert.assertTrue("Unexpected productId in response ", optCI.get().getId().equals(productId));
-        org.junit.Assert.assertTrue(String.format("Unexpected Product Name in response %s",optCI.get().getName()), "product 1".equals(optCI.get().getName()));
+        org.junit.Assert.assertTrue(String.format("Unexpected Product Name in response %s",optCI.get().getName()), "Apple iPad Air 2 16GB Wi-Fi - Gold".equals(optCI.get().getName()));
     }
 
 

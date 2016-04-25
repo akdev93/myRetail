@@ -45,7 +45,7 @@ public class AsyncDataAccessTest {
 
         System.out.println("Time of execution "+(t2-t1));
         org.junit.Assert.assertTrue(String.format("Took longer than expected Expected (%s) but found (%s)",tada.getExecTime(),(t2-t1)),
-                (t2-t1) < (tada.getExecTime()+500));
+                (t2-t1) < (2*tada.getExecTime()));
 
         org.junit.Assert.assertTrue(String.format("Unexpected message (%s). Expected 'Test Message 1'",optS1.get()),"Test Message 1".equals(optS1.get()));
 
