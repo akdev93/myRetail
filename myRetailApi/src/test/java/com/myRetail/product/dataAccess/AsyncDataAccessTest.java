@@ -71,8 +71,8 @@ public class AsyncDataAccessTest {
         long t2 = System.currentTimeMillis();
 
         System.out.println("Time of execution "+(t2-t1));
-        org.junit.Assert.assertTrue(String.format("Took less than amount of time. Expected (%s) but found (%s)",tada.getExecTime(),(t2-t1)),
-                (t2-t1) >= (2*tada.getExecTime()));
+        org.junit.Assert.assertTrue(String.format("Took less than expected amount of time. Expected (%s) but found (%s)",tada.getExecTime(),(t2-t1)),
+                (t2-t1) >= (tada.getExecTime()));
 
         org.junit.Assert.assertTrue(String.format("Took less than amount of time. Expected (%s) but found (%s)",tada.getExecTime(),(t2-t1)),
                 (t2-t1) <= (3*tada.getExecTime()));
