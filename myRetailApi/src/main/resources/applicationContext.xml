@@ -10,7 +10,12 @@
     <context:property-placeholder location="classpath:myRetailApi.properties" />
     <bean id="catalogServiceProxy" class="com.myRetail.product.proxy.RESTCatalogServiceProxyImpl" init-method="init" destroy-method="close">
         <property name="targetUrl" value="${CatalogServiceProxy.targetUrl}" />
+        <property name="connectTimeOut" value="${CatalogServiceProxy.ConnectTimeout}" />
+        <property name="readTimeOut" value="${CatalogServiceProxy.ReadTimeout}" />
+        <property name="maxConnections" value="${CatalogServiceProxy.MaxConnections}" />
+        <property name="maxConnectionsPerHost" value="${CatalogServiceProxy.MaxConnectionsPerHost}"/>
     </bean>
+
 
     <bean id="pricingDAO" class="com.myRetail.product.dao.CassandraPricingDAO" init-method="init" destroy-method="close">
         <property name="connectHost" value="${PricingDAO.connectHost}" />

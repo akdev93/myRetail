@@ -2,6 +2,7 @@ package com.myRetail.product.resources;
 
 import javax.inject.Inject;
 
+import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Consumes;
@@ -23,8 +24,18 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-
+/**
+ * <p>
+ * <code>ProductResource</code> is handler behind the REST Api provided by the service. Instance of this class serves
+ * the requests for <code>GET /product/{id}</code> and (PUT /product/{id}. Instances of this class are wired with <code>ProductInfoAggregator</code>
+ * which serves as a delete to aggregate catalog and pricing data for <code>GET /product/{id}</code> and processing the price
+ * update for <code>PUT /product/{id}</code>
+ *</p>
+ *
+ *
+ */
 @Path("product")
+@Singleton
 public class ProductResource {
 
     @Inject

@@ -10,14 +10,23 @@ import javax.ws.rs.core.Response;
 
 import com.myRetail.product.model.AppError;
 import com.myRetail.product.model.CatalogInfo;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.apache.connector.ApacheClientProperties;
+import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 
 
 public class RESTCatalogServiceProxyImpl extends CatalogServiceProxy {
 
     private String targetUrl;
+    private int maxConnections = 100;
+    private int maxConnectionsPerHost = 20;
+    private int connectTimeOut = 400;
 
+    private int readTimeOut = 3000;
     private Client client;
 
     private static final Logger logger = LogManager.getLogger(RESTCatalogServiceProxyImpl.class);
@@ -43,8 +52,54 @@ public class RESTCatalogServiceProxyImpl extends CatalogServiceProxy {
         this.targetUrl = targetUrl;
     }
 
+    public int getReadTimeOut() {
+        return readTimeOut;
+    }
+
+    public void setReadTimeOut(int readTimeOut) {
+        this.readTimeOut = readTimeOut;
+    }
+
+    public int getConnectTimeOut() {
+        return connectTimeOut;
+    }
+
+    public void setConnectTimeOut(int connectTimeOut) {
+        this.connectTimeOut = connectTimeOut;
+    }
+
+    public int getMaxConnectionsPerHost() {
+        return maxConnectionsPerHost;
+    }
+
+    public void setMaxConnectionsPerHost(int maxConnectionsPerHost) {
+        this.maxConnectionsPerHost = maxConnectionsPerHost;
+    }
+
+    public int getMaxConnections() {
+        return maxConnections;
+    }
+
+    public void setMaxConnections(int maxConnections) {
+        this.maxConnections = maxConnections;
+    }
+
+
     public void init() {
-        client = ClientBuilder.newClient();
+        ClientConfig clientConfig = new ClientConfig();
+        clientConfig = clientConfig.connectorProvider(new ApacheConnectorProvider())
+                .property(ClientProperties.CONNECT_TIMEOUT,getConnectTimeOut())
+                .property(ClientProperties.READ_TIMEOUT,getReadTimeOut());
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setDefaultMaxPerRoute(getMaxConnectionsPerHost());
+        connectionManager.setMaxTotal(getMaxConnections());
+        clientConfig.property(ApacheClientProperties.CONNECTION_MANAGER,connectionManager);
+        client = ClientBuilder.newClient(clientConfig);
+//        client = ClientBuilder.newClient();
+        logger.info(String.format("ConnectTimeout          :%s",getConnectTimeOut()));
+        logger.info(String.format("ReadTimeout             :%s",getReadTimeOut()));
+        logger.info(String.format("DefaultMaxConnsPerRoute :%s", getMaxConnectionsPerHost()));
+        logger.info(String.format("MaxConnections          : %s",getMaxConnections()));
         logger.info("Created client for the webservice");
     }
 
