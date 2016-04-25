@@ -99,6 +99,12 @@ public class ProductInfoAggregator {
     }
 
     public Optional<ProductInfo> updatePrice(ProductInfo productInfo) {
+        logger.info(String.format("Fetching the current catalog information for the product :%s",productInfo.getId()));
+        Optional<CatalogInfo> optCI = catalogServiceProxy.fetchCatalogInfo(productInfo.getId());
+        if(!optCI.isPresent()) {
+            logger.warn(String.format("No catalog information for the product :%s",productInfo.getId()));
+            return Optional.empty();
+        }
         logger.info(String.format("Updating price for product %s",productInfo.getId()));
         pricingDAO.insertPrice(productInfo.getId(),productInfo.getPriceInfo().getPrice(),
                 productInfo.getPriceInfo().getCurrencyCode());

@@ -1,6 +1,9 @@
 package net.ak.myRetailBlackBoxTests;
 
 
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
+import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.junit.After;
@@ -16,6 +19,8 @@ import javax.ws.rs.core.Response;
 import org.json.simple.JSONObject;
 
 
+import java.util.Properties;
+
 import static org.junit.Assert.*;
 
 /**
@@ -27,11 +32,22 @@ public class ProductApiTest
     private String testTargetURL;
     private Client client;
     private WebTarget webTarget;
+    private Cluster cluster;
+    private Session session;
 
 
     @Before
     public void setUp() {
         testTargetURL = TestConfig.getInstance().getTestUrl()+"/product";
+        Properties p = TestConfig.getInstance().getProperties();
+        String connectHost = p.getProperty("PricingDAO.connectHost");
+        String keyspaceName = p.getProperty("PricingDAO.keyspaceName");
+        int connectPort = Integer.parseInt(p.getProperty("PricingDAO.connectPort"));
+        System.out.println(String.format("Connection parameters to database (%s,%s,%s)",connectHost,connectPort,keyspaceName));
+        cluster = Cluster.builder().addContactPoint(connectHost).
+                withPort(connectPort).withRetryPolicy(DefaultRetryPolicy.INSTANCE).build();
+        session = cluster.connect(keyspaceName);
+
         System.out.println("Using URL : "+testTargetURL);
         client = ClientBuilder.newClient();
         webTarget = client.target(testTargetURL);
@@ -39,8 +55,8 @@ public class ProductApiTest
 
     @After
     public void tearDown() {
+        cluster.closeAsync();
         client.close();
-
     }
 
     @Test
@@ -90,6 +106,9 @@ public class ProductApiTest
                 response.getStatusInfo().getFamily().equals((Response.Status.Family.CLIENT_ERROR)));
         org.junit.Assert.assertTrue( String.format("Response has unexpected media type %s", response.getMediaType().toString()),
                 response.getMediaType().toString().equals("application/json"));
+
+
+
 
     }
 
@@ -192,6 +211,37 @@ public class ProductApiTest
                 response.getStatusInfo().equals(Response.Status.NOT_FOUND));
     }
 
+    @Test
+    public void testPriceUpdateApiForNonExistantPrice() throws Exception {
+       String productId="12345678";
+        String updatedPrice = "0.01";
+        String updatePayload = String.format (
+       "{\"id\":\"%s\",\"name\":\"test product\",\"current_price\":{\"value\":%s,\"currency_code\":\"USD\"}}",productId,updatedPrice);
+
+       webTarget = webTarget.path(productId);
+       Response response = getProduct(productId, webTarget);
+
+        org.junit.Assert.assertTrue(String.format("Cannot execute test. Response had unexpected status code %s",response.getStatus()),
+                response.getStatusInfo().getFamily().equals((Response.Status.Family.CLIENT_ERROR)));
+        org.junit.Assert.assertTrue( String.format("Response has unexpected media type %s", response.getMediaType().toString()),
+                response.getMediaType().toString().equals("application/json"));
+
+        response = performPriceUpdate(updatePayload, webTarget);
+        org.junit.Assert.assertTrue( String.format("Response has unexpected status %s", response.getStatus()),
+                response.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL));
+
+        Double price = readPrice(response);
+
+        String priceAsString = price.toString();
+
+        org.junit.Assert.assertTrue( String.format("unexpected price after update %s", priceAsString),
+                updatedPrice.equals(priceAsString));
+
+        deletePriceForTestProduct();
+
+
+    }
+
     private Response getProduct(String productId, WebTarget webTarget) {
        Invocation.Builder invokationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invokationBuilder.get();
@@ -221,6 +271,10 @@ public class ProductApiTest
         Entity<String> entity = Entity.entity(s, MediaType.APPLICATION_JSON);
 
         return invokationBuilder.put(entity);
+    }
+
+    private void deletePriceForTestProduct() {
+        session.execute("delete from product_price where product_id='12345678'");
     }
 }
 

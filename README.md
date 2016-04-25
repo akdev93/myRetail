@@ -136,11 +136,30 @@ PricingDAO.keyspaceName=product_test # Keyspace name
 
 - Open `$CODE_ROOT/myRetail/myRetailBlackBoxTests/src/test/resources/blackboxtest.properties 
 - Validate the URL for the service. If you are running it the same box as myRetailApi, you should not need to change anything
+- Validate the cassandra connection parameters. Please update as required. If you are it on the same box as myRetailApi, you should not need to change anything. _Access to the database is needed to create a scenario to test the price update_
 
 ```
    $> cd $CODE_ROOT/myRetail/myRetailBlackBoxTests/
    $> mvn test
 ```
+
+######Catalog Service behavior
+
+The catalog service has been built to include the following behaviors some of which help us to test specific scenrios in our functional testing
+
+- Each product id below has a specific catalog name 
+
+|product id | name|
+|-----------|-----|
+|15117729   |Apple iPad Air 2 16GB Wi-Fi - Gold|
+|16483589   |iPhone 6 Plus - AT&T"|
+|16696652   |Beats Solo 2 Wireless Headphones - Assorted Colors"|
+|16752456   |Legos Super Heroes The Tumbler 76023"|
+|15643793   |Darley 4 Shelf Bookcase - Vintage Oak"|
+|18643793   |Millsboro Bookcase with Storage - Threshold"|
+|12345678   |test product (for test)"|
+
+- Any id which starts with '-' throws a server side exception and results in a http status code of 500
 
 ## API documentation
 
@@ -256,6 +275,7 @@ This API accepts a payload that is the same structure as the response to the GET
 |1 | The aggregation of the price and catalog information should be multi threaded | The lookup of the price does not depend on any information from the catalog retrieval. Hence, it can be done indepedently and parallel with the catalog fetch. This will save a couple of milliseconds on every request. This will help especially in high traffic low latency situations|
 |2 | The primary key for the table in cassandra should include product id and currency code | If in future we support multiple currencies and need to show prices in all currencies, the price lookup should not cause read against multiple partitions. By creating a composite primary key, all records for the product are stored in the same partition|
 |3 | Use JAX-RS to implment the REST API | Allows changes in provider with no change to the code. We use the JAX-RS reference implementation in Jersey |
+|4 | Use Apache Http Client for the transport provider | Supports pooling, client side read and connect timeouts. _(Much better implementation than the default HttpUrlConnectionProvider)_ |
 
 ## Design
 

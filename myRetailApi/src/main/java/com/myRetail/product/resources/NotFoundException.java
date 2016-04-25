@@ -1,6 +1,7 @@
 package com.myRetail.product.resources;
 
 import com.myRetail.product.model.Error;
+import org.apache.logging.log4j.Logger;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -21,5 +22,20 @@ public class NotFoundException extends javax.ws.rs.NotFoundException {
          super(Response.status(Response.Status.NOT_FOUND)
                 .entity(new Error(new java.util.Date(), message))
                 .type(MediaType.APPLICATION_JSON).build(),th);
+    }
+
+    public NotFoundException(String message, Logger logger) {
+        super(Response.status(Response.Status.NOT_FOUND)
+                .entity(new Error(new java.util.Date(), message))
+                .type(MediaType.APPLICATION_JSON).build());
+        logger.error(message);
+    }
+
+    public NotFoundException(String message, Throwable th, Logger logger) {
+        super(Response.status(Response.Status.NOT_FOUND)
+                .entity(new Error(new java.util.Date(), message))
+                .type(MediaType.APPLICATION_JSON).build(),th);
+        logger.error(message);
+        logger.error(th);
     }
 }

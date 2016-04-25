@@ -25,7 +25,6 @@ public class RESTCatalogServiceProxyImpl extends CatalogServiceProxy {
     private int maxConnections = 100;
     private int maxConnectionsPerHost = 20;
     private int connectTimeOut = 400;
-
     private int readTimeOut = 3000;
     private Client client;
 

@@ -61,12 +61,11 @@ public class ProductResource {
             optional = productInfoAggregator.getProductInfoMultiThreaded(id,"USD");
             logger.debug("Aggregated Product Info from productAggregator "+optional);
         }catch(AppError aE) {
-            logger.error("Failed to process request for product "+id, aE);
             Error e = new Error(new java.util.Date(),aE.getMessage());
-            throw new ServerErrorException(String.format("Unable to process request for product %s",id),aE);
+            throw new ServerErrorException(String.format("Unable to process request for product %s",id),aE,logger);
         }
 
-        optional.orElseThrow(() -> new NotFoundException(String.format("Product Information not available for %s",id)));
+        optional.orElseThrow(() -> new NotFoundException(String.format("Product Information not available for %s",id,logger)));
 
         return optional.get();
     }
@@ -80,14 +79,19 @@ public class ProductResource {
         List<String> errors = findErrorsInRequest(id, productInfo);
         if(!errors.isEmpty()){
             String errorMessage = errors.stream().map(i -> i.toString()).collect(Collectors.joining(", "));
-            logger.error(String.format("Errors found in the request :%s",errorMessage));
-            throw new BadRequestException(errorMessage);
+            errorMessage = String.format("Errors found in the request :%s",errorMessage);
+            throw new BadRequestException(errorMessage,logger);
         }
 
-        logger.info(String.format("Checking if the catalog information exists for the product : %s",id));
-        getProductInfo(id);
+        //logger.info(String.format("Checking if the catalog information exists for the product : %s",id));
+        //getProductInfo(id);
         logger.info(String.format("Updating price for %s : %s",id,productInfo.getPriceInfo()));
-        return productInfoAggregator.updatePrice(productInfo).get();
+        //return productInfoAggregator.updatePrice(productInfo).get();
+        Optional<ProductInfo> optPI = productInfoAggregator.updatePrice(productInfo);
+        if(!optPI.isPresent()) {
+            throw new NotFoundException(String.format("No catalog found for product (%s). Not updating price.",id,logger));
+        }
+        return optPI.get();
     }
 
     protected List<String> findErrorsInRequest(String id, ProductInfo productInfo) {

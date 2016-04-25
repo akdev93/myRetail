@@ -6,6 +6,7 @@ import com.myRetail.product.model.CatalogInfo;
 import com.myRetail.product.model.PriceInfo;
 import com.myRetail.product.model.ProductInfo;
 import com.myRetail.product.proxy.CatalogServiceProxy;
+import org.junit.Test;
 
 import java.util.Optional;
 
@@ -225,6 +226,23 @@ public class ProductInfoAggregatorTest {
         ProductInfoAggregator pia = new ProductInfoAggregator();
         Optional<ProductInfo> optProductInfo = pia.buildProductInfo(optCI,optPI);
         org.junit.Assert.assertTrue("Product Info is not absent although there is no price", !optProductInfo.isPresent());
+    }
+
+    @Test
+    public void testUpdatePriceWhereNoCatalogExists() {
+        String productId="1";
+        ProductInfo productInfo = new ProductInfo("1", "product 1", new PriceInfo("1",1.0f,"USD"));
+        Optional<CatalogInfo> optCI = Optional.empty();
+        CatalogServiceProxy catalogServiceProxy = mock(CatalogServiceProxy.class);
+        PricingDAO pricingDAO = mock(PricingDAO.class);
+
+        doReturn(optCI).when(catalogServiceProxy).fetchCatalogInfo(productId);
+
+        ProductInfoAggregator pia = new ProductInfoAggregator();
+        pia.setCatalogServiceProxy(catalogServiceProxy);
+        pia.setPricingDAO(pricingDAO);
+        Optional<ProductInfo> optPI = pia.updatePrice(productInfo);
+        org.junit.Assert.assertTrue("Product Info is not empty although there is no catalog", !optPI.isPresent());
     }
 
 
