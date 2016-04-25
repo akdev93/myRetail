@@ -3,7 +3,10 @@ package com.myRetail.product.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
+/**
+ * <p><code>CatalogInfo</code> models the data returned by a catalog service.
+ * </p>
+ */
 @XmlRootElement
 public class CatalogInfo {
 

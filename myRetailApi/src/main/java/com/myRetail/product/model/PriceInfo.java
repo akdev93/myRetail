@@ -5,6 +5,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 
+/**
+ * <p><code>PriceInfo</code> models the data in the pricing database. Instances of this class are
+ * returned by subclasses of <code>PricingDAO</code></p>
+ */
 @XmlRootElement
 public class PriceInfo {
 

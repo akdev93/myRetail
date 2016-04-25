@@ -4,6 +4,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 
+/**
+ * <p><code>ProductInfo</code></p> models the aggregated view of the product which includes
+ * the catalog information and the pricing information.
+ */
 @XmlRootElement
 public class ProductInfo {
     @XmlElement

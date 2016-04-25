@@ -3,6 +3,11 @@ package com.myRetail.product.model;
 import org.apache.logging.log4j.Logger;
 
 
+/**
+ * <code>AppError</code> is used to encapsulate all types of application
+ * exceptions that cause an unrecoverable exception in processing a valid
+ * request.
+ */
 public class AppError extends RuntimeException {
 
     public AppError(String message) {

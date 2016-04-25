@@ -13,6 +13,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 
+/**
+ * <p><code>CassandraPricingDAO</code> encapsulates the functionality to perform
+ * price lookup and price updates with a cassandra database. This implementation
+ * uses CQL to access the data with prepared statements. The instance uses the data
+ * in the table (column family) <code>product_price</code>. The shutdown of the instance
+ * is asynchrnous.
+ * </p>
+ */
 public class CassandraPricingDAO extends PricingDAO {
 
     private String connectHost;
@@ -52,6 +60,12 @@ public class CassandraPricingDAO extends PricingDAO {
         this.connectPort = connectPort;
     }
 
+    /**
+     * <p>
+     * Initializes the instance by opening a connection to the cassandra database and creating
+     * prepared statements for all the selects and insert operations using CQL.
+     * </p>
+     */
     public void init() {
 
         logger.info(String.format("Connect Host  : %s ",connectHost));
@@ -69,6 +83,13 @@ public class CassandraPricingDAO extends PricingDAO {
         psInsert = session.prepare(statementForInsert);
     }
 
+    /**
+     * <p>Looks up the price from the  <code>product_price</code> table for a provided product identifier
+     * and currency code.</p>
+     * @param productId product identifier
+     * @param currencyCode currency code
+     * @return price info
+     */
     public Optional<PriceInfo> getProductPrice(String productId, String currencyCode) {
         ResultSet results = executeQuery(productId,currencyCode);
 
@@ -84,6 +105,13 @@ public class CassandraPricingDAO extends PricingDAO {
         return Optional.of(pi);
     }
 
+    /**
+     * <p>Inserts the price provided to the <code>product_price</code> table. If the price already exists, then
+     * it is updated.</p>
+     * @param productId product id
+     * @param price price
+     * @param currencyCode currency code
+     */
     public void insertPrice(String productId, float price, String currencyCode) {
         try {
             session.execute(psInsert.bind(productId,currencyCode, new Float(price)));
@@ -94,12 +122,21 @@ public class CassandraPricingDAO extends PricingDAO {
         }
     }
 
+    /**
+     * <p>Closes the connection asynchronously</p>
+     */
     public void close() {
         cluster.closeAsync();
         logger.info("Closure of connections is scheduled (ASync)");
     }
 
 
+    /**
+     * <p>Convinience method to execute a prepared statement with provided parameters.</p>
+     * @param productId product identifier
+     * @param currencyCode currency code
+     * @return ResultSet
+     */
     private ResultSet executeQuery(String productId,String currencyCode) {
         ResultSet rs = null;
 
@@ -108,7 +145,7 @@ public class CassandraPricingDAO extends PricingDAO {
             rs = session.execute(bs);
         }catch(Exception e) {
             logger.error(String.format("failed to execute query %s with parameters %s %s", psSelect.getQueryString(), productId,currencyCode));
-            throw new AppError("Error in fetching price for Product "+productId, e,logger);
+            throw new AppError(String.format("Error in fetching price for Product %s ",productId), e,logger);
         }
         return rs;
     }

@@ -3,7 +3,10 @@ package com.myRetail.product.model;
 import java.util.Date;
 
 
-
+/**
+ * <p><code>Error</code> models the payload that is returned in case of any exception
+ * in processing a valid or invalid request to the APIs</p>
+ */
 public class Error {
     private Date date;
     private String message;

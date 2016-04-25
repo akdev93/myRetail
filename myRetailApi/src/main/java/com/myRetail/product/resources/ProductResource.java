@@ -26,13 +26,15 @@ import org.apache.logging.log4j.LogManager;
 
 /**
  * <p>
- * <code>ProductResource</code> is handler behind the REST Api provided by the service. Instance of this class serves
- * the requests for <code>GET /product/{id}</code> and (PUT /product/{id}. Instances of this class are wired with <code>ProductInfoAggregator</code>
- * which serves as a delete to aggregate catalog and pricing data for <code>GET /product/{id}</code> and processing the price
- * update for <code>PUT /product/{id}</code>
+ *      <code>ProductResource</code> is handler behind the REST Api provided by the service. Instance of this class serves
+ *      the requests for <code>GET /product/{id}</code> and (PUT /product/{id}. Instances of this class are wired with <code>ProductInfoAggregator</code>
+ *      which serves as a delete to aggregate catalog and pricing data for <code>GET /product/{id}</code> and processing the price
+ *      update for <code>PUT /product/{id}</code>
  *</p>
- *
- *
+ * <p>
+ *     The API documentation <a href="https://github.com/akdev93/myRetail">here</a> provides request payload, the response structure and
+ *     http status codes  used by the API.
+ * </p>
  */
 @Path("product")
 @Singleton
@@ -50,6 +52,12 @@ public class ProductResource {
         this.productInfoAggregator = productInfoAggregator;
     }
 
+    /**
+     * Returns the product information obtained by aggregating the catalog information from the catalog service
+     * and price from the pricing database
+     * @param id Product identifier
+     * @return ProductInfo
+     */
     @GET @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public ProductInfo getProductInfo(@PathParam("id") String id) {
@@ -70,6 +78,16 @@ public class ProductResource {
         return optional.get();
     }
 
+    /**
+     * <p>
+     * Updates the price in the price database. Validates consistancy of product identifier in the payload and the
+     * path element. Validates that the price is greater or equal to 0. Price is not updated  if the catalog is not
+     * found for the product identifier
+     * </p>
+     * @param id product identifier
+     * @param productInfo Product info
+     * @return product info with updated price
+     */
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -83,10 +101,7 @@ public class ProductResource {
             throw new BadRequestException(errorMessage,logger);
         }
 
-        //logger.info(String.format("Checking if the catalog information exists for the product : %s",id));
-        //getProductInfo(id);
         logger.info(String.format("Updating price for %s : %s",id,productInfo.getPriceInfo()));
-        //return productInfoAggregator.updatePrice(productInfo).get();
         Optional<ProductInfo> optPI = productInfoAggregator.updatePrice(productInfo);
         if(!optPI.isPresent()) {
             throw new NotFoundException(String.format("No catalog found for product (%s). Not updating price.",id,logger));
@@ -94,6 +109,18 @@ public class ProductResource {
         return optPI.get();
     }
 
+    /**
+     * <p>
+     * Validates the request and returns the list of errors from the validation. Following validations are done
+     * <ol>
+     *     <li>The product identifier should be consistant in the path and the product info</li>
+     *     <li>The price should not be less than 0</li>
+     * </ol>
+     * </p>
+     * @param id Product identifier in the path
+     * @param productInfo Product Info
+     * @return List of errors(if any)
+     */
     protected List<String> findErrorsInRequest(String id, ProductInfo productInfo) {
 
         List errors = new ArrayList<String>();

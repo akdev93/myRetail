@@ -6,7 +6,14 @@ import org.apache.logging.log4j.Logger;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
+/**
+ * <p>
+ *     <code>ServerErrorException</code> extends <code>javax.ws.rs.ServerErrorException</code> to
+ *     hardwire the <code>Response.Status</code> , the <code>MediaType</code> and the <code>Entity</code>
+ *     used in the error when the request is not valid. Some constructures accept a logger to
+ *     log the stacktrace(if any) and the error message.
+ * </p>
+ */
 public class ServerErrorException extends javax.ws.rs.ServerErrorException {
 
     public ServerErrorException(String message) {
