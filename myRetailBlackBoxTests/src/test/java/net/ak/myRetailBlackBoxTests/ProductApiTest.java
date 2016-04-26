@@ -20,6 +20,7 @@ import org.json.simple.JSONObject;
 
 
 import java.util.Properties;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -355,6 +356,9 @@ public class ProductApiTest
     private Response performPriceUpdate(String s, WebTarget webTarget) {
         Invocation.Builder invokationBuilder = webTarget.request();
         Entity<String> entity = Entity.entity(s, MediaType.APPLICATION_JSON);
+        String requestId = UUID.randomUUID().toString();
+        System.out.println("Request id "+requestId);
+        invokationBuilder.header("x-request-id",requestId );
 
         return invokationBuilder.put(entity);
     }

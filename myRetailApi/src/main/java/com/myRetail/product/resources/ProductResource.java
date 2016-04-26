@@ -94,8 +94,9 @@ public class ProductResource {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ProductInfo setProductPrice(@PathParam("id")String id, ProductInfo productInfo) {
+    public ProductInfo setProductPrice(@PathParam("id")String id, ProductInfo productInfo, @HeaderParam("x-request-id")String requestId) {
 
+        setupThreadContext(Optional.ofNullable(requestId));
         List<String> errors = findErrorsInRequest(id, productInfo);
         if(!errors.isEmpty()){
 //            String errorMessage = errors.stream().map(i -> i.toString()).collect(Collectors.joining(", "));

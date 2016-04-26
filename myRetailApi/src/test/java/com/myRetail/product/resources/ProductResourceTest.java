@@ -143,7 +143,7 @@ public class ProductResourceTest {
         when(productInfoAggregator.getProductInfoMultiThreaded(path,"USD")).thenReturn(Optional.of(productInfo));
         ProductResource productResource = new ProductResource(productInfoAggregator);
         try {
-            ProductInfo prodInfo = productResource.setProductPrice(path, productInfo);
+            ProductInfo prodInfo = productResource.setProductPrice(path, productInfo, "fake-request-id");
         }catch(Exception e ) {
             e.printStackTrace();
             fail(String.format("unexpected exception %s",e.getMessage()));
@@ -159,7 +159,7 @@ public class ProductResourceTest {
 
         ProductResource productResource = new ProductResource(productInfoAggregator);
         try {
-            ProductInfo prodInfo = productResource.setProductPrice(path, productInfo);
+            ProductInfo prodInfo = productResource.setProductPrice(path, productInfo, "fake-request-id");
             fail("No exception thrown for a bad request");
         }catch(Exception e ) {
             org.junit.Assert.assertTrue(String.format("Unexpected exception thrown %s",e.getClass().getName()), (e instanceof BadRequestException));
@@ -175,7 +175,7 @@ public class ProductResourceTest {
 
         ProductResource productResource = new ProductResource(productInfoAggregator);
         try {
-            ProductInfo prodInfo = productResource.setProductPrice(path, productInfo);
+            ProductInfo prodInfo = productResource.setProductPrice(path, productInfo, "fake-request-id");
             fail("No exception thrown for a bad request");
         }catch(Exception e ) {
             org.junit.Assert.assertTrue(String.format("Unexpected exception thrown %s",e.getClass().getName()), (e instanceof BadRequestException));
@@ -193,7 +193,7 @@ public class ProductResourceTest {
         when(productInfoAggregator.getProductInfoMultiThreaded(path,"USD")).thenReturn(Optional.empty());
         ProductResource productResource = new ProductResource(productInfoAggregator);
         try {
-            ProductInfo prodInfo = productResource.setProductPrice(path, productInfo);
+            ProductInfo prodInfo = productResource.setProductPrice(path, productInfo, "fake-request-id");
         }catch(Exception e ) {
             org.junit.Assert.assertTrue(String.format("Unexpected exception thrown %s",e.getClass().getName()), (e instanceof com.myRetail.product.resources.NotFoundException));
         }
