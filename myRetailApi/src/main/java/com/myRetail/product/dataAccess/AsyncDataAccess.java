@@ -58,9 +58,7 @@ public abstract class AsyncDataAccess<T> {
 
         private Object[] args;
         private String requestId;
-        public AsyncCall(Object[]args) {
-            this(args,null);
-        }
+
         public AsyncCall(Object[] args, String requestId) {
             this.args = args;
             this.requestId = requestId;
@@ -71,7 +69,7 @@ public abstract class AsyncDataAccess<T> {
          * <p>
          *     Calls <code>getData(Object[] args)</code> in a thread managed by a thread pool.
          * </p>
-         * @return
+         * @return Optional Type
          */
         public Optional<T> call() {
             ThreadContext.put("requestId", requestId);

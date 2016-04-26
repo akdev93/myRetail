@@ -9,8 +9,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 
 /**
@@ -36,24 +34,13 @@ public class CassandraPricingDAO extends PricingDAO {
 
     public CassandraPricingDAO() {}
 
-    public String getConnectHost() {
-        return connectHost;
-    }
 
     public void setConnectHost(String connectHost) {
         this.connectHost = connectHost;
     }
 
-    public String getKeyspaceName() {
-        return keyspaceName;
-    }
-
     public void setKeyspaceName(String keyspaceName) {
         this.keyspaceName = keyspaceName;
-    }
-
-    public int getConnectPort() {
-        return connectPort;
     }
 
     public void setConnectPort(int connectPort) {
@@ -94,10 +81,9 @@ public class CassandraPricingDAO extends PricingDAO {
         ResultSet results = executeQuery(productId,currencyCode);
 
         Row r = results.one();
-        Optional<PriceInfo> optional = null;
         if(r == null) {
             logger.warn(String.format("No price info found for %s (%s) ",productId, currencyCode));
-            return optional.empty();
+            return Optional.empty();
         }
 
         PriceInfo pi = new PriceInfo(productId,r.getFloat("selling_price"),r.getString("currency_code"));
@@ -138,7 +124,7 @@ public class CassandraPricingDAO extends PricingDAO {
      * @return ResultSet
      */
     private ResultSet executeQuery(String productId,String currencyCode) {
-        ResultSet rs = null;
+        ResultSet rs;
 
         try {
             BoundStatement bs = psSelect.bind(productId,currencyCode);

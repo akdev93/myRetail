@@ -49,24 +49,15 @@ public class ProductInfoAggregator {
         setPricingDAO(pricingDAO);
         setCatalogServiceProxy(catalogServiceProxy);
     }
-    public PricingDAO getPricingDAO() {
-        return pricingDAO;
-    }
+
 
     public void setPricingDAO(PricingDAO pricingDAO) {
         this.pricingDAO = pricingDAO;
     }
 
-    public CatalogServiceProxy getCatalogServiceProxy() {
-        return catalogServiceProxy;
-    }
 
     public void setCatalogServiceProxy(CatalogServiceProxy catalogServiceProxy) {
         this.catalogServiceProxy = catalogServiceProxy;
-    }
-
-    public int getPoolSize() {
-        return poolSize;
     }
 
     public void setPoolSize(int poolSize) {

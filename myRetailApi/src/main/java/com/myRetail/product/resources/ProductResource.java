@@ -8,7 +8,6 @@ import javax.ws.rs.core.MediaType;
 
 import com.myRetail.product.aggregator.ProductInfoAggregator;
 import com.myRetail.product.model.AppError;
-import com.myRetail.product.model.Error;
 import com.myRetail.product.model.ProductInfo;
 
 import java.util.ArrayList;
@@ -42,9 +41,13 @@ public class ProductResource {
 
     private static final Logger logger = LogManager.getLogger(ProductResource.class);
 
-    public ProductResource() {
-    }
 
+    /**
+     * Default constructor - used by Jersey to create the resource.
+     */
+    public ProductResource() {
+
+    }
     public ProductResource(ProductInfoAggregator productInfoAggregator) {
         this.productInfoAggregator = productInfoAggregator;
     }
@@ -69,11 +72,10 @@ public class ProductResource {
             optional = productInfoAggregator.getProductInfoMultiThreaded(id,"USD");
             logger.debug("Aggregated Product Info from productAggregator "+optional);
         }catch(AppError aE) {
-            Error e = new Error(new java.util.Date(),aE.getMessage());
             throw new ServerErrorException(String.format("Unable to process request for product %s",id),aE,logger);
         }
 
-        optional.orElseThrow(() -> new NotFoundException(String.format("Product Information not available for %s",id,logger)));
+        optional.orElseThrow(() -> new NotFoundException(String.format("Product Information not available for %s",id),logger));
 
         return optional.get();
     }
@@ -96,7 +98,8 @@ public class ProductResource {
 
         List<String> errors = findErrorsInRequest(id, productInfo);
         if(!errors.isEmpty()){
-            String errorMessage = errors.stream().map(i -> i.toString()).collect(Collectors.joining(", "));
+//            String errorMessage = errors.stream().map(i -> i.toString()).collect(Collectors.joining(", "));
+            String errorMessage = errors.stream().collect(Collectors.joining(", "));
             errorMessage = String.format("Errors found in the request :%s",errorMessage);
             throw new BadRequestException(errorMessage,logger);
         }
@@ -104,7 +107,7 @@ public class ProductResource {
         logger.info(String.format("Updating price for %s : %s",id,productInfo.getPriceInfo()));
         Optional<ProductInfo> optPI = productInfoAggregator.updatePrice(productInfo);
         if(!optPI.isPresent()) {
-            throw new NotFoundException(String.format("No catalog found for product (%s). Not updating price.",id,logger));
+            throw new NotFoundException(String.format("No catalog found for product (%s). Not updating price.",id),logger);
         }
         return optPI.get();
     }
@@ -123,7 +126,7 @@ public class ProductResource {
      */
     protected List<String> findErrorsInRequest(String id, ProductInfo productInfo) {
 
-        List errors = new ArrayList<String>();
+        List<String> errors = new ArrayList<>();
         if(!id.equals(productInfo.getId())) {
             errors.add(String.format("Product id in the payload(%s) does not match the path (%s)",productInfo.getId(), id));
         }
@@ -135,7 +138,7 @@ public class ProductResource {
     }
 
     protected void setupThreadContext(Optional<String> optRequestId) {
-        String requestId = "";
+        String requestId;
         if(!optRequestId.isPresent()) {
             logger.debug("No request id found. Generating a new one");
             requestId = UUID.randomUUID().toString();
