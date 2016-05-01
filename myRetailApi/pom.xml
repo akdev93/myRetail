@@ -83,7 +83,18 @@
       <artifactId>jersey-apache-client</artifactId>
       <version>1.19.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.16.8</version>
+    </dependency>
   </dependencies>
+  <repositories>
+        <repository>
+            <id>projectlombok.org</id>
+            <url>http://projectlombok.org/mavenrepo</url>
+        </repository>
+  </repositories>
   <build>
     <finalName>myRetailApi</finalName>
     <plugins>

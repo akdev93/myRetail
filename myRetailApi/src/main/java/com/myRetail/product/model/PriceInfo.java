@@ -1,5 +1,9 @@
 package com.myRetail.product.model;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -10,16 +14,23 @@ import javax.xml.bind.annotation.XmlTransient;
  * returned by subclasses of <code>PricingDAO</code></p>
  */
 @XmlRootElement
+@ToString
 public class PriceInfo {
 
     @XmlElement(name="value")
+    @Getter
+    @Setter
     private float price;
 
 
 
     @XmlElement(name="currency_code")
+    @Getter
+    @Setter
     private String currencyCode;
 
+    @XmlTransient
+    @Setter
     private String productId;
 
     public PriceInfo() {}
@@ -30,37 +41,4 @@ public class PriceInfo {
         this.currencyCode = currencyCode;
     }
 
-    @XmlTransient
-    public String getProductId() {
-        return productId;
-    }
-
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
-
-    public float getPrice() {
-        return price;
-    }
-
-    public void setPrice(float price) {
-        this.price = price;
-    }
-
-    public String getCurrencyCode() {
-        return currencyCode;
-    }
-
-    public void setCurrencyCode(String currencyCode) {
-        this.currencyCode = currencyCode;
-    }
-
-    @Override
-    public String toString() {
-        return "PriceInfo{" +
-                "price=" + price +
-                ", currencyCode='" + currencyCode + '\'' +
-                ", productId='" + productId + '\'' +
-                '}';
-    }
 }
