@@ -99,7 +99,6 @@ public class ProductResource {
         setupThreadContext(Optional.ofNullable(requestId));
         List<String> errors = findErrorsInRequest(id, productInfo);
         if(!errors.isEmpty()){
-//            String errorMessage = errors.stream().map(i -> i.toString()).collect(Collectors.joining(", "));
             String errorMessage = errors.stream().collect(Collectors.joining(", "));
             errorMessage = String.format("Errors found in the request :%s",errorMessage);
             throw new BadRequestException(errorMessage,logger);

@@ -1,5 +1,7 @@
 package com.myRetail.product.model;
 
+import lombok.Data;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -8,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </p>
  */
 @XmlRootElement
+@Data
 public class CatalogInfo {
 
     @XmlElement
@@ -21,28 +24,5 @@ public class CatalogInfo {
     public CatalogInfo(String id, String name) {
         this.id = id;
         this.name = name;
-    }
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return "CatalogInfo{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                '}';
     }
 }
